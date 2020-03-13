@@ -1,6 +1,18 @@
-class Jeton {
+
+/**
+* Classe reprensentant un jeton d un joueur
+*/
+public class Jeton {
+
+  /**
+  * attribut reprensentant le numero du joueur
+  */
   private int id;
 
+  /**
+  * Contructeur de l objet jeton
+  * @param joueur correspond au joueur possedant le jeton
+  */
   public Jeton(int joueur){
     try {
       this.id = joueur;
@@ -10,10 +22,18 @@ class Jeton {
     }
   }
 
+  /**
+  * Methode retournant l entier du joueur
+  * @return la valeur entiere de l attribut id
+  */
   public int getId(){
     return this.id;
   }
 
+  /**
+  * Methode retournant l entier du joueur en chaine de caractere
+  * @return la valeur entiere de l attribut id en chaine de caractere
+  */
   @Override
   public String toString(){
     return ""+this.id;
