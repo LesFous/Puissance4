@@ -10,4 +10,7 @@ class Grille {
     }
   }
 
+  public Grille Trier(){
+    return this;
+  }
 }
