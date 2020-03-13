@@ -1,4 +1,4 @@
-class Grille {
+public class Grille {
   private Colonne colonnes;
 
   public void afficher() {
