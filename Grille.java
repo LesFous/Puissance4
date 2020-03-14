@@ -16,7 +16,7 @@ class Grille {
     String jeton_str;
 
     // Pour chaque ligne
-    for(int j=0; j<nb_lignes; j++) {
+    for(int j=nb_lignes-1; j>=0; j--) {
       // Pour chaque colonne
       for (int i=0; i<colonnes.length; i++) {
         // On recupere le jeton s'il y en a un
@@ -45,8 +45,21 @@ class Grille {
     System.out.println("+");;
   }
 
+  public void ajouterJeton(Jeton j, int col) {
+    if (col < 0 || col >= colonnes.length) {
+      throw new IndexOutOfBoundsException("La colonne n'est pas valide :"+col);
+    }
+    if(colonnes[col].size()+1 > nb_lignes) {
+      nb_lignes = colonnes[col].size()+1;
+    }
+    colonnes[col].ajouter(j);
+  }
+
   public static void main(String[] args) {
     Grille g= new Grille(4, 8);
+    g.afficher();
+    Joueur j = new JoueurReel();
+    g.ajouterJeton(new Jeton(j.getTeamId()), j.jouer());
     g.afficher();
   }
 

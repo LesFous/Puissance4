@@ -9,6 +9,13 @@ public class Colonne {
     jetons = new ArrayList<Jeton>(nb_lignes);
   }
 
+  public void ajouter(Jeton j) {
+    if(j != null)
+      jetons.add(j);
+    else
+      throw new NullPointerException("Impossible d'ajouter un jeton NULL");
+  }
+
   /**
   * Methode qui renvoie un Jeton a l indice i
   * @param i correspond a l index du tableu jetons
