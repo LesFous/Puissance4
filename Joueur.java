@@ -1,14 +1,15 @@
 public abstract class Joueur{
-  private int team_id;
-  private static int team_count=0;
+  private int id_equipe;
+  private static int nb_instances=0;
 
   public Joueur() {
-    team_id = ++team_count;
+    id_equipe = ++nb_instances;
   }
 
   public int getTeamId() {
-    return team_id;
+    return id_equipe;
   }
 
   public abstract int jouer();
+
 }
