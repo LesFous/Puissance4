@@ -26,7 +26,7 @@ public class Jeton {
   * Methode retournant l entier du joueur
   * @return la valeur entiere de l attribut id
   */
-  public int getId(){
+  public int getTeamId(){
     return this.id;
   }
 

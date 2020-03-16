@@ -93,8 +93,46 @@ class Grille {
   *
   * @param col la colonne ou il faut verifier
   */
-  private void verifierCoup(int col) {
-    // TODO Finir ca
+  private boolean verifierCoup(int col) {
+    if(col < 0 || col >= colonnes.length) {
+      throw new IndexOutOfBoundsException("Impossible de verifier le coup pour la colonne "+col);
+    }
+    int j = colonnes[col].size()-1;
+    int equipe = colonnes[col].getJeton(j).getTeamId();
+    boolean gagnant = false;
+    // On verifie verticalement
+    if(j >= 3) {
+      gagnant=true;
+      for(int j2 = j-1; j2>=j-3; j2--) {
+        // System.out.println("j2: "+j2);
+        if(colonnes[col].getJeton(j2).getTeamId() != equipe) {
+          gagnant = false;
+        }
+      }
+    }
+    if(gagnant)
+      System.out.println("verticalement");
+    // On verifie horizontalement
+    if(colonnes.length >= 4 && !gagnant) {
+      int left = Math.max(0, col-3);
+      int right = Math.min(colonnes.length-1, col+3);
+      System.out.println("l:"+left+" r:"+right);
+      int i = left;
+      int nb = 0;
+      while(i <= right && !gagnant && colonnes[i].size() > j) { // TODO a optimiser avec nb
+        // System.out.println("taille: "+colonnes[i].size());
+        if(colonnes[i].getJeton(j).getTeamId()!=equipe)
+          nb = 0;
+        else
+          nb ++;
+        if(nb == 4) {
+          gagnant = true;
+          System.out.println("horizontalement");
+        }
+        i++;
+      }
+    }
+    return gagnant;
   }
 
   /**
@@ -121,6 +159,10 @@ class Grille {
         System.out.println("\nEtat du jeu :");
         afficher();
         // On verifie le coup joué
+        if(verifierCoup(col)) {
+          jouer = false;
+          System.out.println("Partie finie, l'equipe "+j.getTeamId()+" gagne");
+        }
       }
     }
   }
@@ -128,10 +170,10 @@ class Grille {
   /**
   * Methode principale lancee au moment ou le programme est execute
   *
-  * @param args les arguments passes au moment de lancer le programme 
+  * @param args les arguments passes au moment de lancer le programme
   */
   public static void main(String[] args) {
-    Grille g= new Grille(4, 8);
+    Grille g= new Grille(6, 8);
     Joueur[] joueurs = new Joueur[2];
     joueurs[0] = new JoueurReel();
     joueurs[1] = new JoueurReel();
