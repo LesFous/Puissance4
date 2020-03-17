@@ -162,6 +162,7 @@ class Grille {
         if(verifierCoup(col)) {
           jouer = false;
           System.out.println("Partie finie, l'equipe "+j.getTeamId()+" gagne");
+          return ;
         }
       }
     }
