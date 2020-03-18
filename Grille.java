@@ -1,8 +1,10 @@
+import java.util.Scanner;
+
 /**
 * Classe qui represente un grille de puissance 4
 *
 */
-class Grille {
+public class Grille {
   /**
   * attribut qui represente toutes les colonnes de la grille
   */
@@ -181,10 +183,39 @@ class Grille {
   */
   public static void main(String[] args) {
     Grille g= new Grille(6, 8);
-    Joueur[] joueurs = new Joueur[2];
-    joueurs[0] = new Ordi();
-    joueurs[1] = new JoueurReel();
-    g.jouer(joueurs);
+    System.out.println("Combien y a-t-il de joueurs? ");
+    Scanner sc = new Scanner(System.in);
+    int nb_joueurs = sc.nextInt();
+    if(nb_joueurs== 0){
+      Joueur[] joueurs = new Joueur[2];
+      joueurs[0] = new Ordi();
+      joueurs[1] = new Ordi();
+      g.jouer(joueurs);
+    }else if (nb_joueurs== 1){
+      Joueur[] joueurs = new Joueur[2];
+      joueurs[0] = new JoueurReel();
+      joueurs[1] = new Ordi();
+      g.jouer(joueurs);
+    }else if(nb_joueurs> 1){
+      System.out.println("Combien y a-t-il d'ordinateurs ? ");
+      Scanner sc2 = new Scanner(System.in);
+      int nb_ordi =sc2.nextInt();
+      if(nb_ordi>= 0){
+        Joueur[] joueurs = new Joueur[nb_joueurs];
+        int i= 0;
+        while(i!=(nb_joueurs-nb_ordi)){
+          joueurs[i]= new JoueurReel();
+          i++;
+        }
+        while(i != nb_joueurs){
+          joueurs[i] = new Ordi();
+          i++;
+        }
+
+        g.jouer(joueurs);
+      } 
+    }
+
   //   g.afficher();
   //   Joueur j = new JoueurReel();
   //   g.ajouterJeton(new Jeton(j.getTeamId()), j.jouer());
