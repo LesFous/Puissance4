@@ -10,6 +10,6 @@ public abstract class Joueur{
     return id_equipe;
   }
 
-  public abstract int jouer();
+  public abstract int jouer(int nbcol);
 
 }

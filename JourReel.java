@@ -3,7 +3,7 @@ import java.util.Scanner;
 class JoueurReel extends Joueur {
 
   @Override
-  public int jouer() {
+  public int jouer(int nbcol) {
     System.out.println("Quelle colonne jouer ? ");
     Scanner sc = new Scanner(System.in);
     return sc.nextInt()-1;
@@ -11,7 +11,7 @@ class JoueurReel extends Joueur {
 
   @Override
   public String toString() {
-    return "Joueur réel (équipe "+getTeamId()+")";
+    return "Joueur reel (equipe "+getTeamId()+")";
   }
 
 }

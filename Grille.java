@@ -4,14 +4,19 @@
 */
 class Grille {
   /**
-  * attribut qui représente toutes les colonnes de la grille
+  * attribut qui represente toutes les colonnes de la grille
   */
   private Colonne colonnes[];
 
   /**
-  * attibut qui représsente le nombre de lignes de la grille
+  * attibut qui represente le nombre de lignes de la grille
   */
   private int nb_lignes;
+
+  /**
+  * attribut qui represente le nombre de colonnes de la grille
+  */
+  private int nb_colonnes;
 
   /**
   * Constructeur qui permet de créer une grille d'une taille donnee
@@ -25,6 +30,7 @@ class Grille {
       colonnes[i] = new Colonne(nb_lignes);
     }
     this.nb_lignes=nb_lignes;
+    this.nb_colonnes= nb_colonnes;
   }
 
   /**
@@ -71,7 +77,7 @@ class Grille {
   }
 
   /**
-  * Methode priee qui permet d'ajouter un jeton a une colonne
+  * Methode privee qui permet d'ajouter un jeton a une colonne
   * Si le nombre de lignes de suffit pas, il est augmneté de un
   *
   * @param j Le jeton à ajouter (non null)
@@ -153,7 +159,7 @@ class Grille {
       for(Joueur j : joueurs) {
         // On fait jouer le joueur
         System.out.println(j);
-        col = j.jouer();
+        col = j.jouer(nb_colonnes);
         ajouterJeton(new Jeton(j.getTeamId()), col);
         // On affiche le résultat de son coup
         System.out.println("\nEtat du jeu :");
@@ -176,7 +182,7 @@ class Grille {
   public static void main(String[] args) {
     Grille g= new Grille(6, 8);
     Joueur[] joueurs = new Joueur[2];
-    joueurs[0] = new JoueurReel();
+    joueurs[0] = new Ordi();
     joueurs[1] = new JoueurReel();
     g.jouer(joueurs);
   //   g.afficher();
