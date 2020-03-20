@@ -1,8 +1,9 @@
 import java.util.ArrayList;
+import java.io.*;
 /**
 * Classe reprensentant une colonne de jeton remplie par les joueurs
 */
-public class Colonne {
+public class Colonne implements Serializable{
   private ArrayList<Jeton> jetons;
 
   public Colonne(int nb_lignes) {

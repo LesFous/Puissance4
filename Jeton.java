@@ -1,8 +1,8 @@
-
+import java.io.*;
 /**
 * Classe reprensentant un jeton d un joueur
 */
-public class Jeton {
+public class Jeton implements Serializable {
 
   /**
   * attribut reprensentant le numero du joueur

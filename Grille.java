@@ -1,10 +1,11 @@
 import java.util.Scanner;
+import java.io.*;
 
 /**
 * Classe qui represente un grille de puissance 4
 *
 */
-public class Grille {
+public class Grille implements Serializable{
   /**
   * attribut qui represente toutes les colonnes de la grille
   */
@@ -213,7 +214,7 @@ public class Grille {
         }
 
         g.jouer(joueurs);
-      } 
+      }
     }
 
   //   g.afficher();
