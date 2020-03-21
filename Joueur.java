@@ -1,4 +1,6 @@
-public abstract class Joueur{
+import java.io.*;
+
+public abstract class Joueur implements Serializable{
   private int id_equipe;
   private static int nb_instances=0;
 

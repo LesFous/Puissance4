@@ -174,6 +174,16 @@ public class Grille implements Serializable{
           return ;
         }
       }
+      System.out.println("Voulez-vous sauvegarder ou continuer ou arreter ? (A/S/C)"); // A = arreter, S = sauvegarder, C = continuer
+      Scanner sc = new Scanner(System.in);
+      String rep = sc.nextLine();
+      if (rep.equals("S")){
+        Sauvegarde s = new Sauvegarde("Grille.txt","Joueurs.txt");
+        s.sauvegarder(this,joueurs);
+        jouer =false;
+      }else if(rep.equals("A")){
+        jouer=false;
+      }
     }
   }
 
@@ -183,38 +193,50 @@ public class Grille implements Serializable{
   * @param args les arguments passes au moment de lancer le programme
   */
   public static void main(String[] args) {
-    Grille g= new Grille(6, 8);
-    System.out.println("Combien y a-t-il de joueurs? ");
-    Scanner sc = new Scanner(System.in);
-    int nb_joueurs = sc.nextInt();
-    if(nb_joueurs== 0){
-      Joueur[] joueurs = new Joueur[2];
-      joueurs[0] = new Ordi();
-      joueurs[1] = new Ordi();
-      g.jouer(joueurs);
-    }else if (nb_joueurs== 1){
-      Joueur[] joueurs = new Joueur[2];
-      joueurs[0] = new JoueurReel();
-      joueurs[1] = new Ordi();
-      g.jouer(joueurs);
-    }else if(nb_joueurs> 1){
-      System.out.println("Combien y a-t-il d'ordinateurs ? ");
-      Scanner sc2 = new Scanner(System.in);
-      int nb_ordi =sc2.nextInt();
-      if(nb_ordi>= 0){
-        Joueur[] joueurs = new Joueur[nb_joueurs];
-        int i= 0;
-        while(i!=(nb_joueurs-nb_ordi)){
-          joueurs[i]= new JoueurReel();
-          i++;
-        }
-        while(i != nb_joueurs){
-          joueurs[i] = new Ordi();
-          i++;
-        }
-
+    Grille g;
+    Joueur[] joueurs;
+    System.out.println("Voulez-vous reprendre votre sauvegarde ? (O/N)");
+    Scanner scan = new Scanner(System.in);
+    String reponse = scan.nextLine();
+    if (reponse.equals("O")){
+      g = Sauvegarde.reprendrePartie("Grille.txt");
+      joueurs = Sauvegarde.reprendreJoueurs("Joueurs.txt");
+       g.jouer(joueurs);
+    }else{
+      g= new Grille(6,8);
+      System.out.println("Combien y a-t-il de joueurs? ");
+      Scanner sc = new Scanner(System.in);
+      int nb_joueurs = sc.nextInt();
+      if(nb_joueurs== 0){
+        joueurs = new Joueur[2];
+        joueurs[0] = new Ordi();
+        joueurs[1] = new Ordi();
         g.jouer(joueurs);
-      }
+      }else if (nb_joueurs== 1){
+        joueurs = new Joueur[2];
+        joueurs[0] = new JoueurReel();
+        joueurs[1] = new Ordi();
+        g.jouer(joueurs);
+      }else if(nb_joueurs> 1){
+        System.out.println("Combien y a-t-il d'ordinateurs ? ");
+        Scanner sc2 = new Scanner(System.in);
+        int nb_ordi =sc2.nextInt();
+        if(nb_ordi>= 0){
+          joueurs = new Joueur[nb_joueurs];
+          int i= 0;
+          while(i!=(nb_joueurs-nb_ordi)){
+            joueurs[i]= new JoueurReel();
+            i++;
+          }
+          while(i != nb_joueurs){
+            joueurs[i] = new Ordi();
+            i++;
+          }
+
+          g.jouer(joueurs);
+        }
+    }
+
     }
 
   //   g.afficher();
