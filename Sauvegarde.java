@@ -64,4 +64,22 @@ public class Sauvegarde {
       }
       return equipe;
     }
+
+    public static <T> T recupererObjet(String nom_fich) {
+      T obj = null;
+      try{
+        ObjectInputStream Reader= new ObjectInputStream(new FileInputStream(nom_fich));
+        obj = (T)(Reader.readObject());
+        Reader.close();
+      }catch (FileNotFoundException e){
+        System.out.println("Le fichier de lecture n'existe pas ");
+        e.printStackTrace();
+      }catch (IOException e ){
+        System.out.println("Prbleme lors de la lecture");
+        e.printStackTrace();
+      }catch (Exception e){
+        e.printStackTrace();
+      }
+      return obj;
+    }
 }
