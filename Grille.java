@@ -178,9 +178,16 @@ public class Grille implements Serializable{
       Scanner sc = new Scanner(System.in);
       String rep = sc.nextLine();
       if (rep.equals("S")){
-        Sauvegarde s = new Sauvegarde("Grille.txt","Joueurs.txt");
-        s.sauvegarder(this,joueurs);
-        jouer =false;
+        try{
+          Sauvegarde s = new Sauvegarde("Sauvegarde.txt");
+          s.sauvegarder(this,joueurs);
+          jouer =false;
+        }catch (IOException e){
+          System.out.println("Probleme lors de l'ecriture");
+          e.printStackTrace();
+        }catch (Exception e){
+          e.printStackTrace();
+        }
       }else if(rep.equals("A")){
         jouer=false;
       }
@@ -193,15 +200,26 @@ public class Grille implements Serializable{
   * @param args les arguments passes au moment de lancer le programme
   */
   public static void main(String[] args) {
-    Grille g;
-    Joueur[] joueurs;
+    Grille g = null;
+    Joueur[] joueurs = null;
     System.out.println("Voulez-vous reprendre votre sauvegarde ? (O/N)");
     Scanner scan = new Scanner(System.in);
     String reponse = scan.nextLine();
     if (reponse.equals("O")){
-      g = Sauvegarde.reprendrePartie("Grille.txt");
-      joueurs = Sauvegarde.reprendreJoueurs("Joueurs.txt");
+        try {
+          g = (Grille)(Sauvegarde.recupererObjet("Sauvegarde.txt"));
+          joueurs = (Joueur[])(Sauvegarde.recupererObjet("Sauvegarde.txt"));
+    }catch (FileNotFoundException e){
+      System.out.println("Le fichier de lecture n'existe pas ");
+      e.printStackTrace();
+    }catch (IOException e){
+      System.out.println("Probleme lors de la lecture");
+      e.printStackTrace();
+    }catch (Exception e){
+      e.printStackTrace();
+    }
        g.jouer(joueurs);
+
     }else{
       g= new Grille(6,8);
       System.out.println("Combien y a-t-il de joueurs? ");
