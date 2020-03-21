@@ -135,7 +135,8 @@ public class Grille implements Serializable{
       System.out.println("V");
     }
 
-    // TODO IMPORTANT DE REGLER left top right bottom en fonction de la grille 
+    // TODO IMPORTANT DE REGLER left top right bottom en fonction de la grille
+    
 
     // Diagonale de haut en bas
     int top=0, bottom=0;
