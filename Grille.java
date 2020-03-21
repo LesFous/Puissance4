@@ -119,30 +119,72 @@ public class Grille implements Serializable{
         }
       }
     }
-    if(gagnant)
-      System.out.println("verticalement");
-    // On verifie horizontalement
-    if(colonnes.length >= 4 && !gagnant) {
-      int left = Math.max(0, col-3);
-      int right = Math.min(colonnes.length-1, col+3);
-      System.out.println("l:"+left+" r:"+right);
-      int i = left;
-      int nb = 0;
-      while(i <= right && !gagnant && colonnes[i].size() > j) { // TODO a optimiser avec nb
-        // System.out.println("taille: "+colonnes[i].size());
+
+    // horizontalement
+    int left=0, right=0, nb=0;
+    if(!gagnant) {
+      left = Math.max(0, col-3);
+      right = Math.min(colonnes.length-1, col+3);
+      if(right - left < 4) // Si c'est impossible horizontalement
+        return false;
+      gagnant = verifierIntervalle(left, right, colonnes[col].size()-1, 0, equipe);
+      if(gagnant)
+        System.out.println("H");
+    } else {
+      System.out.println("V");
+    }
+
+    // Diagonale de haut en bas
+    int top=0, bottom=0;
+    if(!gagnant) {
+      top = Math.min(nb_colonnes-1, j+3);
+      bottom = Math.max(0, j-3);
+      if(top - bottom < 4)
+        return false;
+
+      gagnant = verifierIntervalle(left, right, top, -1, equipe);
+    }
+
+    if(!gagnant)
+      gagnant = verifierIntervalle(left, right, bottom, 1, equipe);
+
+    System.out.println(gagnant);
+    return gagnant;
+  }
+
+  /**
+  * Fonction qui permet de verifier si un coup est gagnant sur un intervalle donné (bornes incluses)
+  * En itérant de left à right avec la possibilité de changer j à chaque itération
+  *
+  * @param left la colonne par laquelle on commence
+  * @param right la colonne jusqu'ou on peut regarder
+  * @param j la valeur initiale de j
+  * @param j_pas la valeur à ajouter à j à chaque itération
+  * @param equipe qu'on s'interesse si elle a gagné
+  *
+  * @return si le coup est gagnant
+  */
+  private boolean verifierIntervalle(int left, int right, int j, int j_pas, int equipe) {
+    int nb = 0;
+    int i = left;
+    while(i <= right && colonnes[i].size() > j) { // TODO a optimiser avec nb
+      if(j < colonnes[i].size()) { // Si on est pas en dehors de la colonne
         if(colonnes[i].getJeton(j).getTeamId()!=equipe)
           nb = 0;
         else
           nb ++;
-        if(nb == 4) {
-          gagnant = true;
-          System.out.println("horizontalement");
-        }
-        i++;
       }
+      if(nb == 4)
+        return true;
+      i++;
+      j+=j_pas;
+      if(j < 0) // Si j décrémente en dessous de 0
+        return false;
+
     }
-    return gagnant;
+    return false;
   }
+
 
   /**
   * Methode qui permet de lancer une partie entre plusieurs joueurs
@@ -174,16 +216,16 @@ public class Grille implements Serializable{
           return ;
         }
       }
-      System.out.println("Voulez-vous sauvegarder ou continuer ou arreter ? (A/S/C)"); // A = arreter, S = sauvegarder, C = continuer
-      Scanner sc = new Scanner(System.in);
-      String rep = sc.nextLine();
-      if (rep.equals("S")){
-        Sauvegarde s = new Sauvegarde("Grille.txt","Joueurs.txt");
-        s.sauvegarder(this,joueurs);
-        jouer =false;
-      }else if(rep.equals("A")){
-        jouer=false;
-      }
+    }
+    System.out.println("Voulez-vous sauvegarder ou continuer ou arreter ? (A/S/C)"); // A = arreter, S = sauvegarder, C = continuer
+    Scanner sc = new Scanner(System.in);
+    String rep = sc.nextLine();
+    if (rep.equals("S")){
+      Sauvegarde s = new Sauvegarde("Grille.txt","Joueurs.txt");
+      s.sauvegarder(this,joueurs);
+      jouer =false;
+    }else if(rep.equals("A")){
+      jouer=false;
     }
   }
 
