@@ -125,7 +125,8 @@ public class Grille implements Serializable{
     if(!gagnant) {
       left = Math.max(0, col-3);
       right = Math.min(colonnes.length-1, col+3);
-      if(right - left < 4) // Si c'est impossible horizontalement
+      System.out.println(left+" "+right);
+      if(right - left < 3) // Si c'est impossible horizontalement
         return false;
       gagnant = verifierIntervalle(left, right, colonnes[col].size()-1, 0, equipe);
       if(gagnant)
@@ -134,12 +135,18 @@ public class Grille implements Serializable{
       System.out.println("V");
     }
 
+    // TODO IMPORTANT DE REGLER left top right bottom en fonction de la grille 
+
     // Diagonale de haut en bas
     int top=0, bottom=0;
+    System.out.println("j:"+j);
     if(!gagnant) {
       top = Math.min(nb_colonnes-1, j+3);
+      left += top - j-3;
       bottom = Math.max(0, j-3);
-      if(top - bottom < 4)
+      right += bottom - j+3;
+      System.out.println(left+" "+right+" "+top+" "+bottom);
+      if(top - bottom < 3)
         return false;
 
       gagnant = verifierIntervalle(left, right, top, -1, equipe);
@@ -167,7 +174,9 @@ public class Grille implements Serializable{
   private boolean verifierIntervalle(int left, int right, int j, int j_pas, int equipe) {
     int nb = 0;
     int i = left;
+    System.out.println("\n\n");
     while(i <= right && colonnes[i].size() > j) { // TODO a optimiser avec nb
+      // System.out.println("i: "+i+" j:"+j);
       if(j < colonnes[i].size()) { // Si on est pas en dehors de la colonne
         if(colonnes[i].getJeton(j).getTeamId()!=equipe)
           nb = 0;
