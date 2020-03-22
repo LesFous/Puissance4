@@ -110,73 +110,74 @@ public class Grille implements Serializable{
     int equipe = colonnes[col].getJeton(j).getTeamId();
     boolean gagnant = false;
     // On verifie verticalement
-    if(j >= 3) {
+    if(j >= 3) { // Si la place le permet
       gagnant=true;
-      for(int j2 = j-1; j2>=j-3; j2--) {
-        // System.out.println("j2: "+j2);
+      for(int j2 = j-1; j2>=j-3; j2--) { // On regarde les 3 derniers jetons de la colonne apres celui qui vient d'être joué
         if(colonnes[col].getJeton(j2).getTeamId() != equipe) {
           gagnant = false;
         }
       }
     }
 
+    // le nombre de max jetons qu'on peut regarder dans un direction
+    int ne, no, se, so; // En diagonale
+    int haut, droite, bas, gauche; // Horizontalement et verticalement
+
+    // Pour chaque diagonale on regarde le plus petit entre le nombre de jetons possibles
+    // verticalement et horizontalement, on major ce nombre par 3 car pas besoin de plus
+    ne = Math.min(colonnes.length - col - 1, Math.min(nb_lignes - j - 1, 3));
+    no = Math.min(nb_lignes - j - 1, Math.min(col, 3));
+    se = Math.min(colonnes.length - col -1, Math.min(j, 3));
+    so = Math.min(col, Math.min(j, 3));
+
     // horizontalement
-    int left=0, right=0, nb=0;
     if(!gagnant) {
-      left = Math.max(0, col-3);
-      right = Math.min(colonnes.length-1, col+3);
-      System.out.println(left+" "+right);
-      if(right - left < 3) // Si c'est impossible horizontalement
-        return false;
-      gagnant = verifierIntervalle(left, right, colonnes[col].size()-1, 0, equipe);
-      if(gagnant)
-        System.out.println("H");
-    } else {
-      System.out.println("V");
+      gauche = Math.max(0, col-3);
+      droite = Math.min(colonnes.length-1, col+3);
+      if(droite - gauche >= 4) // Si la place le permet
+        gagnant = verifierIntervalle(gauche, droite, colonnes[col].size()-1, 0, equipe);
     }
 
-    // TODO IMPORTANT DE REGLER left top right bottom en fonction de la grille
-    
-
-    // Diagonale de haut en bas
-    int top=0, bottom=0;
-    System.out.println("j:"+j);
+    // Diagonale de SO à NE
     if(!gagnant) {
-      top = Math.min(nb_colonnes-1, j+3);
-      left += top - j-3;
-      bottom = Math.max(0, j-3);
-      right += bottom - j+3;
-      System.out.println(left+" "+right+" "+top+" "+bottom);
-      if(top - bottom < 3)
-        return false;
-
-      gagnant = verifierIntervalle(left, right, top, -1, equipe);
+      gauche = col - so;
+      droite = col + ne;
+      haut = j + ne;
+      bas = j - so;
+      if(haut + bas >= 4 && gauche + droite >= 4) // Si la place le permet
+        gagnant = verifierIntervalle(gauche, droite, bas, 1, equipe);
     }
 
-    if(!gagnant)
-      gagnant = verifierIntervalle(left, right, bottom, 1, equipe);
-
-    System.out.println(gagnant);
+    // Diagonale de NO à SE
+    if(!gagnant) {
+      gauche = col - no;
+      droite = col + se;
+      haut = j + no;
+      bas = j - se;
+      if(haut + bas >= 4 && gauche + droite >= 4) // Si la place le permet
+        gagnant = verifierIntervalle(gauche, droite, haut, -1, equipe);
+    }
     return gagnant;
   }
 
+
   /**
   * Fonction qui permet de verifier si un coup est gagnant sur un intervalle donné (bornes incluses)
-  * En itérant de left à right avec la possibilité de changer j à chaque itération
+  * En itérant de gauche à droite avec la possibilité de changer j à chaque itération
   *
-  * @param left la colonne par laquelle on commence
-  * @param right la colonne jusqu'ou on peut regarder
+  * @param gauche la colonne par laquelle on commence
+  * @param droite la colonne jusqu'ou on peut regarder
   * @param j la valeur initiale de j
   * @param j_pas la valeur à ajouter à j à chaque itération
   * @param equipe qu'on s'interesse si elle a gagné
   *
   * @return si le coup est gagnant
   */
-  private boolean verifierIntervalle(int left, int right, int j, int j_pas, int equipe) {
-    int nb = 0;
-    int i = left;
-    System.out.println("\n\n");
-    while(i <= right && colonnes[i].size() > j) { // TODO a optimiser avec nb
+  private boolean verifierIntervalle(int gauche, int droite, int j, int j_pas, int equipe) {
+    int nb = 0; // Le nombrede jetons de l'equipe consécutifs
+    int i = gauche;
+    // System.out.println("\n\n");
+    while(i+3-nb <= droite && colonnes[i].size() > j) { // TODO a optimiser avec nb
       // System.out.println("i: "+i+" j:"+j);
       if(j < colonnes[i].size()) { // Si on est pas en dehors de la colonne
         if(colonnes[i].getJeton(j).getTeamId()!=equipe)
@@ -226,23 +227,23 @@ public class Grille implements Serializable{
           return ;
         }
       }
-      System.out.println("Voulez-vous sauvegarder ou continuer ou arreter ? (A/S/C)"); // A = arreter, S = sauvegarder, C = continuer
-      Scanner sc = new Scanner(System.in);
-      String rep = sc.nextLine();
-      if (rep.equals("S")){
-        try{
-          Sauvegarde s = new Sauvegarde("Sauvegarde.txt");
-          s.sauvegarder(this,joueurs);
-          jouer =false;
-        }catch (IOException e){
-          System.out.println("Probleme lors de l'ecriture");
-          e.printStackTrace();
-        }catch (Exception e){
-          e.printStackTrace();
-        }
-      }else if(rep.equals("A")){
-        jouer=false;
+    }
+    System.out.println("Voulez-vous sauvegarder ou continuer ou arreter ? (A/S/C)"); // A = arreter, S = sauvegarder, C = continuer
+    Scanner sc = new Scanner(System.in);
+    String rep = sc.nextLine();
+    if (rep.equals("S")){
+      try{
+        Sauvegarde s = new Sauvegarde("Sauvegarde.txt");
+        s.sauvegarder(this,joueurs);
+        jouer =false;
+      }catch (IOException e){
+        System.out.println("Probleme lors de l'ecriture");
+        e.printStackTrace();
+      }catch (Exception e){
+        e.printStackTrace();
       }
+    }else if(rep.equals("A")){
+      jouer=false;
     }
   }
 
