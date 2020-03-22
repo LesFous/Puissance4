@@ -176,9 +176,8 @@ public class Grille implements Serializable{
   private boolean verifierIntervalle(int gauche, int droite, int j, int j_pas, int equipe) {
     int nb = 0; // Le nombrede jetons de l'equipe consécutifs
     int i = gauche;
-    // System.out.println("\n\n");
-    while(i+3-nb <= droite && colonnes[i].size() > j) { // TODO a optimiser avec nb
-      // System.out.println("i: "+i+" j:"+j);
+    // Tant qu'il est possible que 4 jetons soient alignés
+    while(i+3-nb <= droite) {
       if(j < colonnes[i].size()) { // Si on est pas en dehors de la colonne
         if(colonnes[i].getJeton(j).getTeamId()!=equipe)
           nb = 0;
