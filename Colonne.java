@@ -6,8 +6,8 @@ import java.io.*;
 public class Colonne implements Serializable{
   private ArrayList<Jeton> jetons;
 
-  public Colonne(int nb_lignes) {
-    jetons = new ArrayList<Jeton>(nb_lignes);
+  public Colonne() {
+    jetons = new ArrayList<Jeton>();
   }
 
   public void ajouter(Jeton j) {

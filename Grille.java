@@ -1,4 +1,7 @@
 import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.io.*;
 
 /**
@@ -9,17 +12,7 @@ public class Grille implements Serializable{
   /**
   * attribut qui represente toutes les colonnes de la grille
   */
-  private Colonne colonnes[];
-
-  /**
-  * attibut qui represente le nombre de lignes de la grille
-  */
-  private int nb_lignes;
-
-  /**
-  * attribut qui represente le nombre de colonnes de la grille
-  */
-  private int nb_colonnes;
+  private List<Colonne> colonnes;
 
   /**
   * attibut qui représente les joueurs s'affontrant dans une grille
@@ -27,19 +20,46 @@ public class Grille implements Serializable{
   private Joueur[] joueurs;
 
   /**
+  * attribut pour savoir qui a gagné (le numéro de joueur)
+  * -1 si la partie n'est pas finie
+  */
+  private int gagnant;
+
+  /**
   * Constructeur qui permet de créer une grille d'une taille donnee
   *
-  * @param nb_lignes le nombre de nb_lignes
   * @param nb_colonnes le nombre de colonnes
   */
-  public Grille(int nb_lignes, int nb_colonnes) {
+  public Grille(int nb_colonnes) {
+    if(nb_colonnes <= 0)
+      throw new NullPointerException("Impossible de créer un grille avec "+nb_colonnes);
+
     joueurs = null;
-    colonnes = new Colonne[nb_colonnes];
+    gagnant = -1;
+    colonnes = new ArrayList<Colonne>(nb_colonnes);
     for(int i=0; i<nb_colonnes; i++) {
-      colonnes[i] = new Colonne(nb_lignes);
+      colonnes.add(new Colonne());
     }
-    this.nb_lignes=nb_lignes;
-    this.nb_colonnes= nb_colonnes;
+  }
+
+  /**
+  * Permet d'obtenir la liste des colones triées de la plus remplie a la moins remplie
+  *
+  * @return la listes des colonnes triées
+  */
+  public ArrayList<Colonne> getColonnesTriees() {
+    ArrayList<Colonne> copie = new ArrayList<Colonne>(colonnes);
+    Collections.<Colonne>sort(copie, new ComparateurTaillesColonnes());
+    return copie;
+  }
+
+  /**
+  * Methode pour connaître le nombre de lignes d'une grille en fonction de sa colonne la plus remplie
+  *
+  * @return le nombre de lignes
+  */
+  public int getNbLignes() {
+    return getColonnesTriees().get(0).size();
   }
 
   /**
@@ -50,16 +70,17 @@ public class Grille implements Serializable{
     afficherSepLigne();
     Jeton jeton;
     String jeton_str;
+    int nb_lignes = Math.max(getNbLignes(), 1);
 
     // Pour chaque ligne
     for(int j=nb_lignes-1; j>=0; j--) {
       // Pour chaque colonne
-      for (int i=0; i<colonnes.length; i++) {
+      for (int i=0; i<colonnes.size(); i++) {
         // On recupere le jeton s'il y en a un
-        if(j >= colonnes[i].size())
+        if(j >= colonnes.get(i).size())
           jeton = null;
         else {
-          jeton = colonnes[i].getJeton(j);
+          jeton = colonnes.get(i).getJeton(j);
         }
         // On recupere la représentation du jeton
         if(jeton == null)
@@ -74,17 +95,12 @@ public class Grille implements Serializable{
     }
   }
 
-  @Override
-  public String toString() {
-    return "Grille : Lxl = "+nb_lignes+"x"+nb_colonnes+" nb_joueurs = "+joueurs.length;
-  }
-
   /**
   * Methode privee qui permet d'afficher la séparation entre deux lignes
   *
   */
   private void afficherSepLigne() {
-    for(int i=0; i < colonnes.length; i++) {
+    for(int i=0; i < colonnes.size(); i++) {
       System.out.print("+-");
     }
     System.out.println("+");;
@@ -98,13 +114,10 @@ public class Grille implements Serializable{
   * @param col Le numero de la colonne a laquelle on ajoute le Jeton (entre 0 et nb_colonnes compris)
   */
   private void ajouterJeton(Jeton j, int col) {
-    if (col < 0 || col >= colonnes.length) {
+    if (col < 0 || col >= colonnes.size()) {
       throw new IndexOutOfBoundsException("La colonne n'est pas valide :"+col);
     }
-    if(colonnes[col].size()+1 > nb_lignes) {
-      nb_lignes = colonnes[col].size()+1;
-    }
-    colonnes[col].ajouter(j);
+    colonnes.get(col).ajouter(j);
   }
 
   /**
@@ -114,17 +127,17 @@ public class Grille implements Serializable{
   * @param col la colonne ou il faut verifier
   */
   private boolean verifierCoup(int col) {
-    if(col < 0 || col >= colonnes.length) {
+    if(col < 0 || col >= colonnes.size()) {
       throw new IndexOutOfBoundsException("Impossible de verifier le coup pour la colonne "+col);
     }
-    int j = colonnes[col].size()-1;
-    int equipe = colonnes[col].getJeton(j).getTeamId();
+    int j = colonnes.get(col).size()-1;
+    int equipe = colonnes.get(col).getJeton(j).getTeamId();
     boolean gagnant = false;
     // On verifie verticalement
     if(j >= 3) { // Si la place le permet
       gagnant=true;
       for(int j2 = j-1; j2>=j-3; j2--) { // On regarde les 3 derniers jetons de la colonne apres celui qui vient d'être joué
-        if(colonnes[col].getJeton(j2).getTeamId() != equipe) {
+        if(colonnes.get(col).getJeton(j2).getTeamId() != equipe) {
           gagnant = false;
         }
       }
@@ -133,22 +146,23 @@ public class Grille implements Serializable{
     // le nombre de max jetons qu'on peut regarder dans un direction
     int ne, no, se, so; // En diagonale
     int haut, droite, bas, gauche; // Horizontalement et verticalement
+    int nb_lignes = getNbLignes();
 
     // Pour chaque diagonale on regarde le plus petit entre le nombre de jetons possibles
     // verticalement et horizontalement, on major ce nombre par 3 car pas besoin de plus
-    ne = Math.min(colonnes.length - col - 1, Math.min(nb_lignes - j - 1, 3));
+    ne = Math.min(colonnes.size() - col - 1, Math.min(nb_lignes - j - 1, 3));
     no = Math.min(nb_lignes - j - 1, Math.min(col, 3));
-    se = Math.min(colonnes.length - col -1, Math.min(j, 3));
+    se = Math.min(colonnes.size() - col -1, Math.min(j, 3));
     so = Math.min(col, Math.min(j, 3));
     // System.out.println("Possibilitées : ne("+ne+") no("+no+") se("+se+") so("+so+")");
 
     // horizontalement
     if(!gagnant) {
       gauche = Math.max(0, col-3);
-      droite = Math.min(colonnes.length-1, col+3);
+      droite = Math.min(colonnes.size()-1, col+3);
       // System.out.println("\nH : gauche("+gauche+") droite("+droite+")");
       if(droite - gauche >= 3) // Si la place le permet
-        gagnant = verifierIntervalle(gauche, droite, colonnes[col].size()-1, 0, equipe);
+        gagnant = verifierIntervalle(gauche, droite, colonnes.get(col).size()-1, 0, equipe);
     }
 
     // Diagonale de SO à NE
@@ -194,7 +208,7 @@ public class Grille implements Serializable{
     // Tant qu'il est possible que 4 jetons soient alignés
     while(i+3-nb <= droite) {
       // System.out.print("nb("+nb+") i("+i+") j("+j+")   ");
-      if(j >= colonnes[i].size() || colonnes[i].getJeton(j).getTeamId()!=equipe )
+      if(j >= colonnes.get(i).size() || colonnes.get(i).getJeton(j).getTeamId()!=equipe )
         nb = 0;
       else
         nb ++;
@@ -210,7 +224,6 @@ public class Grille implements Serializable{
         return false;
       }
     }
-    System.out.println("non");
     return false;
   }
 
@@ -221,113 +234,43 @@ public class Grille implements Serializable{
     this.joueurs = joueurs;
   }
 
+  /**
+  * Getter de l'attibut gagnant
+  */
+  public int getGagnant() {
+    return gagnant;
+  }
+
 
   /**
   * Methode qui permet de lancer une partie entre plusieurs joueurs
   *
   * @param joueurs Liste des joueurs qui jouent
   */
-  public void jouer() {
+  public void faireJouerJoueurs() {
+    if(gagnant != -1)
+      throw new NullPointerException("Impossible de faire jouer les joueurs sur une partie déjà finie");
     if(joueurs == null || joueurs.length == 0)
       throw new NullPointerException("Impossible de faire une partie sans joueurs");
     for(Joueur j : joueurs) {
       if(j==null)
-        throw new NullPointerException("Impossible de faire joeur un joueur 'null'");
+        throw new NullPointerException("Impossible de faire joueur un joueur 'null'");
     }
 
-    boolean jouer = true;
     int col;
-    Scanner sc = new Scanner(System.in);
+    System.out.println("\n\n---- Etat de la partie ----");
     afficher();
-    while (jouer) {
-      for(Joueur j : joueurs) {
-        // On fait jouer le joueur
-        System.out.println(j);
-        col = j.jouer(nb_colonnes);
-        ajouterJeton(new Jeton(j.getTeamId()), col);
-        // On affiche le résultat de son coup
-        System.out.println("\nEtat du jeu :");
-        afficher();
-        // On verifie le coup joué
-        if(verifierCoup(col)) {
-          jouer = false;
-          System.out.println("Partie finie, l'equipe "+j.getTeamId()+" gagne");
-        }
-        System.out.println("Voulez-vous sauvegarder ou continuer ou arreter ? (A/S/C)"); // A = arreter, S = sauvegarder, C = continuer
-        String rep = sc.nextLine();
-        if (rep.equals("S")){
-          try{
-            Sauvegarde s = new Sauvegarde("Sauvegarde.txt");
-            s.sauvegarder(this);
-            jouer =false;
-          }catch (IOException e){
-            System.out.println("Probleme lors de l'ecriture");
-            e.printStackTrace();
-          }catch (Exception e){
-            e.printStackTrace();
-          }
-        }else if(rep.equals("A")){
-          jouer=false;
-        }
-      }
+    for(Joueur j : joueurs) {
+      // On fait jouer le joueur
+      System.out.println(j);
+      col = j.jouer(colonnes.size());
+      ajouterJeton(new Jeton(j.getTeamId()), col);
+      // On affiche le résultat de son coup
+      System.out.println("\nEtat du jeu :");
+      afficher();
+      // On verifie le coup joué
+      if(verifierCoup(col))
+        gagnant=j.getTeamId();
     }
-  }
-
-  /**
-  * Methode principale lancee au moment ou le programme est execute
-  *
-  * @param args les arguments passes au moment de lancer le programme
-  */
-  public static void main(String[] args) {
-    Grille g = null;
-    Joueur[] joueurs = null;
-    System.out.println("Voulez-vous reprendre votre sauvegarde ? (O/N)");
-    Scanner scan = new Scanner(System.in);
-    String reponse = scan.nextLine();
-    if (reponse.toUpperCase().equals("O")){
-      try {
-        g = Sauvegarde.recuperer("Sauvegarde.txt");
-      }catch (FileNotFoundException e){
-        System.out.println("Le fichier de lecture n'existe pas ");
-        e.printStackTrace();
-      }catch (IOException e){
-        System.out.println("Probleme lors de la lecture");
-        e.printStackTrace();
-      }catch (Exception e){
-        e.printStackTrace();
-      }
-    }else{
-      g= new Grille(6,8);
-      System.out.println("Combien y a-t-il de joueurs? ");
-      Scanner sc = new Scanner(System.in);
-      int nb_joueurs = sc.nextInt();
-      if(nb_joueurs== 0){
-        joueurs = new Joueur[2];
-        joueurs[0] = new Ordi();
-        joueurs[1] = new Ordi();
-      }else if (nb_joueurs== 1){
-        joueurs = new Joueur[2];
-        joueurs[0] = new JoueurReel();
-        joueurs[1] = new Ordi();
-      }else if(nb_joueurs> 1){
-        System.out.println("Combien y a-t-il d'ordinateurs ? ");
-        Scanner sc2 = new Scanner(System.in);
-        int nb_ordi =sc2.nextInt();
-        if(nb_ordi>= 0){
-          joueurs = new Joueur[nb_joueurs];
-          int i= 0;
-          while(i!=(nb_joueurs-nb_ordi)){
-            joueurs[i]= new JoueurReel();
-            i++;
-          }
-          while(i != nb_joueurs){
-            joueurs[i] = new Ordi();
-            i++;
-          }
-        }
-      }
-      g.setJoueurs(joueurs);
-    }
-    g.jouer();
   }
 }
