@@ -22,12 +22,18 @@ public class Grille implements Serializable{
   private int nb_colonnes;
 
   /**
+  * attibut qui représente les joueurs s'affontrant dans une grille
+  */
+  private Joueur[] joueurs;
+
+  /**
   * Constructeur qui permet de créer une grille d'une taille donnee
   *
   * @param nb_lignes le nombre de nb_lignes
   * @param nb_colonnes le nombre de colonnes
   */
   public Grille(int nb_lignes, int nb_colonnes) {
+    joueurs = null;
     colonnes = new Colonne[nb_colonnes];
     for(int i=0; i<nb_colonnes; i++) {
       colonnes[i] = new Colonne(nb_lignes);
@@ -66,6 +72,11 @@ public class Grille implements Serializable{
       System.out.println("|");
       afficherSepLigne();
     }
+  }
+
+  @Override
+  public String toString() {
+    return "Grille : Lxl = "+nb_lignes+"x"+nb_colonnes+" nb_joueurs = "+joueurs.length;
   }
 
   /**
@@ -129,12 +140,14 @@ public class Grille implements Serializable{
     no = Math.min(nb_lignes - j - 1, Math.min(col, 3));
     se = Math.min(colonnes.length - col -1, Math.min(j, 3));
     so = Math.min(col, Math.min(j, 3));
+    // System.out.println("Possibilitées : ne("+ne+") no("+no+") se("+se+") so("+so+")");
 
     // horizontalement
     if(!gagnant) {
       gauche = Math.max(0, col-3);
       droite = Math.min(colonnes.length-1, col+3);
-      if(droite - gauche >= 4) // Si la place le permet
+      // System.out.println("\nH : gauche("+gauche+") droite("+droite+")");
+      if(droite - gauche >= 3) // Si la place le permet
         gagnant = verifierIntervalle(gauche, droite, colonnes[col].size()-1, 0, equipe);
     }
 
@@ -144,7 +157,8 @@ public class Grille implements Serializable{
       droite = col + ne;
       haut = j + ne;
       bas = j - so;
-      if(haut + bas >= 4 && gauche + droite >= 4) // Si la place le permet
+      // System.out.println("\ndiag SO NE : gauche("+gauche+") droite("+droite+") haut("+haut+") bas("+bas+")");
+      if(haut + bas >= 3 && droite - gauche >= 3) // Si la place le permet
         gagnant = verifierIntervalle(gauche, droite, bas, 1, equipe);
     }
 
@@ -154,7 +168,8 @@ public class Grille implements Serializable{
       droite = col + se;
       haut = j + no;
       bas = j - se;
-      if(haut + bas >= 4 && gauche + droite >= 4) // Si la place le permet
+      // System.out.println("\ndiag NO SE : gauche("+gauche+") droite("+droite+") haut("+haut+") bas("+bas+")");
+      if(haut + bas >= 3 && droite - gauche >= 3) // Si la place le permet
         gagnant = verifierIntervalle(gauche, droite, haut, -1, equipe);
     }
     return gagnant;
@@ -178,21 +193,32 @@ public class Grille implements Serializable{
     int i = gauche;
     // Tant qu'il est possible que 4 jetons soient alignés
     while(i+3-nb <= droite) {
-      if(j < colonnes[i].size()) { // Si on est pas en dehors de la colonne
-        if(colonnes[i].getJeton(j).getTeamId()!=equipe)
-          nb = 0;
-        else
-          nb ++;
-      }
-      if(nb == 4)
+      // System.out.print("nb("+nb+") i("+i+") j("+j+")   ");
+      if(j >= colonnes[i].size() || colonnes[i].getJeton(j).getTeamId()!=equipe )
+        nb = 0;
+      else
+        nb ++;
+
+      if(nb == 4) {
+        System.out.println("4 !");
         return true;
+      }
       i++;
       j+=j_pas;
-      if(j < 0) // Si j décrémente en dessous de 0
+      if(j < 0) {// Si j décrémente en dessous de 0
+        System.out.println("j -1");
         return false;
-
+      }
     }
+    System.out.println("non");
     return false;
+  }
+
+  /**
+  * Methode pour definir les joueurs d'une partie
+  */
+  public void setJoueurs(Joueur[] joueurs) {
+    this.joueurs = joueurs;
   }
 
 
@@ -201,7 +227,9 @@ public class Grille implements Serializable{
   *
   * @param joueurs Liste des joueurs qui jouent
   */
-  public void jouer(Joueur joueurs[]) {
+  public void jouer() {
+    if(joueurs == null || joueurs.length == 0)
+      throw new NullPointerException("Impossible de faire une partie sans joueurs");
     for(Joueur j : joueurs) {
       if(j==null)
         throw new NullPointerException("Impossible de faire joeur un joueur 'null'");
@@ -209,6 +237,7 @@ public class Grille implements Serializable{
 
     boolean jouer = true;
     int col;
+    Scanner sc = new Scanner(System.in);
     afficher();
     while (jouer) {
       for(Joueur j : joueurs) {
@@ -223,26 +252,24 @@ public class Grille implements Serializable{
         if(verifierCoup(col)) {
           jouer = false;
           System.out.println("Partie finie, l'equipe "+j.getTeamId()+" gagne");
-          return ;
+        }
+        System.out.println("Voulez-vous sauvegarder ou continuer ou arreter ? (A/S/C)"); // A = arreter, S = sauvegarder, C = continuer
+        String rep = sc.nextLine();
+        if (rep.equals("S")){
+          try{
+            Sauvegarde s = new Sauvegarde("Sauvegarde.txt");
+            s.sauvegarder(this);
+            jouer =false;
+          }catch (IOException e){
+            System.out.println("Probleme lors de l'ecriture");
+            e.printStackTrace();
+          }catch (Exception e){
+            e.printStackTrace();
+          }
+        }else if(rep.equals("A")){
+          jouer=false;
         }
       }
-    }
-    System.out.println("Voulez-vous sauvegarder ou continuer ou arreter ? (A/S/C)"); // A = arreter, S = sauvegarder, C = continuer
-    Scanner sc = new Scanner(System.in);
-    String rep = sc.nextLine();
-    if (rep.equals("S")){
-      try{
-        Sauvegarde s = new Sauvegarde("Sauvegarde.txt");
-        s.sauvegarder(this,joueurs);
-        jouer =false;
-      }catch (IOException e){
-        System.out.println("Probleme lors de l'ecriture");
-        e.printStackTrace();
-      }catch (Exception e){
-        e.printStackTrace();
-      }
-    }else if(rep.equals("A")){
-      jouer=false;
     }
   }
 
@@ -257,21 +284,18 @@ public class Grille implements Serializable{
     System.out.println("Voulez-vous reprendre votre sauvegarde ? (O/N)");
     Scanner scan = new Scanner(System.in);
     String reponse = scan.nextLine();
-    if (reponse.equals("O")){
-        try {
-          g = (Grille)(Sauvegarde.recupererObjet("Sauvegarde.txt"));
-          joueurs = (Joueur[])(Sauvegarde.recupererObjet("Sauvegarde.txt"));
-    }catch (FileNotFoundException e){
-      System.out.println("Le fichier de lecture n'existe pas ");
-      e.printStackTrace();
-    }catch (IOException e){
-      System.out.println("Probleme lors de la lecture");
-      e.printStackTrace();
-    }catch (Exception e){
-      e.printStackTrace();
-    }
-       g.jouer(joueurs);
-
+    if (reponse.toUpperCase().equals("O")){
+      try {
+        g = Sauvegarde.recuperer("Sauvegarde.txt");
+      }catch (FileNotFoundException e){
+        System.out.println("Le fichier de lecture n'existe pas ");
+        e.printStackTrace();
+      }catch (IOException e){
+        System.out.println("Probleme lors de la lecture");
+        e.printStackTrace();
+      }catch (Exception e){
+        e.printStackTrace();
+      }
     }else{
       g= new Grille(6,8);
       System.out.println("Combien y a-t-il de joueurs? ");
@@ -281,12 +305,10 @@ public class Grille implements Serializable{
         joueurs = new Joueur[2];
         joueurs[0] = new Ordi();
         joueurs[1] = new Ordi();
-        g.jouer(joueurs);
       }else if (nb_joueurs== 1){
         joueurs = new Joueur[2];
         joueurs[0] = new JoueurReel();
         joueurs[1] = new Ordi();
-        g.jouer(joueurs);
       }else if(nb_joueurs> 1){
         System.out.println("Combien y a-t-il d'ordinateurs ? ");
         Scanner sc2 = new Scanner(System.in);
@@ -302,18 +324,10 @@ public class Grille implements Serializable{
             joueurs[i] = new Ordi();
             i++;
           }
-
-          g.jouer(joueurs);
         }
+      }
+      g.setJoueurs(joueurs);
     }
-
-    }
-
-  //   g.afficher();
-  //   Joueur j = new JoueurReel();
-  //   g.ajouterJeton(new Jeton(j.getTeamId()), j.jouer());
-  //   g.afficher();
+    g.jouer();
   }
-
-
 }

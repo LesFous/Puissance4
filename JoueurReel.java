@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-class JoueurReel extends Joueur {
+public class JoueurReel extends Joueur {
 
   @Override
   public int jouer(int nbcol) {

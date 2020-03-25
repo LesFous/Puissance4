@@ -2,24 +2,23 @@ import java.io.*;
 
 public class Sauvegarde {
 
-  private String fich_sauv;
+  private String nom_fich;
 
-  public Sauvegarde(String txt){
-    this.fich_sauv = txt;
+  public Sauvegarde(String nom_fich) {
+    this.nom_fich = nom_fich;
   }
 
-    public void sauvegarder(Grille c, Joueur[] j) throws IOException, Exception {
-        ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(this.fich_sauv));
-        writer.writeObject(c);
-        writer.writeObject(j);
-        writer.close();
-    }
+  public void sauvegarder(Grille c) throws IOException {
+    ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(nom_fich));
+    writer.writeObject(c);
+    writer.close();
+  }
 
-    public static <T> T recupererObjet(String nom_fich) throws IOException,Exception {
-        T obj = null;
-        ObjectInputStream Reader= new ObjectInputStream(new FileInputStream(nom_fich));
-        obj = (T)(Reader.readObject());
-        Reader.close();
-        return obj;
-    }
+  public static Grille recuperer(String nom_fich) throws IOException, ClassNotFoundException {
+    ObjectInputStream reader = new ObjectInputStream(new FileInputStream(nom_fich));
+    Grille obj = null;
+    obj = (Grille)(reader.readObject());
+    reader.close();
+    return obj;
+  }
 }
