@@ -39,14 +39,14 @@ class Principale {
   * @param args les arguments passes au moment de lancer le programme
   */
   public static void main(String[] args) {
-    Grille g = null;
+    Partie p= null;
     Scanner scan = new Scanner(System.in);
     System.out.println("Voulez-vous reprendre votre sauvegarde ? (O/N)");
     String reponse = scan.nextLine();
 
     if (reponse.toUpperCase().equals("O")) {
       try {
-        g = Sauvegarde.recuperer("Sauvegarde.txt");
+        p = Sauvegarde.recuperer("Sauvegarde.txt");
       } catch (FileNotFoundException e) {
         System.out.println("Le fichier de lecture n'existe pas ");
         e.printStackTrace();
@@ -70,23 +70,23 @@ class Principale {
       System.out.println("Combien y a-t-il d'ordinateurs ?");
       nb_ordinateurs = demanderEntier(0, nb_joueurs);
 
-      g = new Grille(nb_colonnes);
+      p=new Partie(new Grille(nb_colonnes));
       Joueur[] joueurs = new Joueur[nb_joueurs];
 
-      for(int i=0; i<nb_ordinateurs; i++)
-        joueurs[i] = new JoueurOrdinateur();
-
-      for(int i=nb_ordinateurs; i<nb_joueurs; i++)
+      for(int i=0; i<nb_joueurs-nb_ordinateurs; i++)
         joueurs[i] = new JoueurReel();
 
-      g.setJoueurs(joueurs);
+      for(int i=nb_joueurs-nb_ordinateurs; i<nb_joueurs; i++)
+        joueurs[i] = new JoueurOrdinateur();
+
+      p.setJoueurs(joueurs);
     }
     // On lance la partie
     boolean partie_finie=false;
     while(!partie_finie) {
-      g.faireJouerJoueurs();
-      if(g.getGagnant() != -1) {
-        System.out.println("Bravo !!\nL'équipe "+g.getGagnant()+" a gagné");
+      p.faireJouerJoueurs();
+      if(p.getGagnant() != -1) {
+        System.out.println("Bravo !!\nL'équipe "+p.getGagnant()+" a gagné");
         partie_finie = true;
 
       } else {
@@ -94,7 +94,7 @@ class Principale {
         reponse = scan.nextLine().toUpperCase();
         if (reponse.equals("S")){
           try{
-            new Sauvegarde("Sauvegarde.txt").sauvegarder(g);
+            new Sauvegarde("Sauvegarde.txt").sauvegarder(p);
             partie_finie = true;
           }catch (IOException e){
             System.out.println("Probleme lors de l'ecriture");
