@@ -5,60 +5,46 @@ import java.io.*;
     */
 public class Partie implements Serializable{
 
-    /**
-    * attribut qui represente la grille de puissance 4
-    */
-    private Grille g;
+  /**
+  * attribut qui represente la grille de puissance 4
+  */
+  private Grille g;
 
-    /**
-    * attibut qui représente les joueurs s'affontrant dans une grille
-    */
-    private Joueur[] joueurs;
+  /**
+  * attibut qui représente les joueurs s'affontrant dans une grille
+  */
+  private Joueur[] joueurs;
 
-    /**
-    * attribut pour savoir qui a gagné (le numéro de joueur)
-    * -1 si la partie n'est pas finie
-    */
-    private int gagnant;
+  /**
+  * attribut pour savoir qui a gagné (le numéro de joueur)
+  * -1 si la partie n'est pas finie
+  */
+  private int gagnant;
 
-    /**
-    * Constructeur permettant de creer une partie avec une grille pasée en parametre
-    * @param grille represente la grille de puissance 4
-    */
-    public Partie(Grille grille){
-      g= grille;
-      joueurs= null;
-      gagnant = -1;
-    }
+  /**
+  * Constructeur permettant de creer une partie avec une grille pasée en parametre
+  * @param grille represente la grille de puissance 4
+  */
+  public Partie(Grille grille){
+    g= grille;
+    joueurs= null;
+    gagnant = -1;
+  }
 
 
-    /**
-    * Methode pour definir les joueurs d'une partie
-    */
-    public void setJoueurs(Joueur[] joueurs) {
-      this.joueurs = joueurs;
-    }
+  /**
+  * Methode pour definir les joueurs d'une partie
+  */
+  public void setJoueurs(Joueur[] joueurs) {
+    this.joueurs = joueurs;
+  }
 
-    /**
-    * Getter de l'attibut gagnant
-    */
-    public int getGagnant() {
-      return gagnant;
-    }
-
-    /**
-    * Methode privee qui permet d'ajouter un jeton a une colonne
-    * Si le nombre de lignes de suffit pas, il est augmneté de un
-    *
-    * @param j Le jeton à ajouter (non null)
-    * @param col Le numero de la colonne a laquelle on ajoute le Jeton (entre 0 et nb_colonnes compris)
-    */
-    private void ajouterJeton(Jeton j, int col) {
-      if (col < 0 || col >= g.getColonnes().size()) {
-        throw new IndexOutOfBoundsException("La colonne n'est pas valide :"+col);
-      }
-      g.getColonnes().get(col).ajouter(j);
-    }
+  /**
+  * Getter de l'attibut gagnant
+  */
+  public int getGagnant() {
+    return gagnant;
+  }
 
   /**
   * Methode qui permet de lancer une partie entre plusieurs joueurs
@@ -82,13 +68,15 @@ public class Partie implements Serializable{
       // On fait jouer le joueur
       System.out.println(j);
       col = j.jouer(g.getColonnes().size());
-      ajouterJeton(new Jeton(j.getTeamId()), col);
+      g.ajouterJeton(new Jeton(j.getTeamId()), col);
       // On affiche le résultat de son coup
       System.out.println("\nEtat du jeu :");
       g.afficher();
       // On verifie le coup joué
-      if(verifierCoup(col))
+      if(verifierCoup(col)) {
         gagnant=j.getTeamId();
+        break;
+      }
     }
   }
 
