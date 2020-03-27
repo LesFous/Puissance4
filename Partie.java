@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.io.*;
 
     /**
@@ -22,6 +23,11 @@ public class Partie implements Serializable{
   private int gagnant;
 
   /**
+  * attribut qui enregistre tous les coups (colonne) de chaque joueur dans une liste d'entiers
+  */
+  private ArrayList<Integer> historique;
+
+  /**
   * Constructeur permettant de creer une partie avec une grille pasée en parametre
   * @param grille represente la grille de puissance 4
   */
@@ -31,6 +37,7 @@ public class Partie implements Serializable{
     g= grille;
     joueurs= null;
     gagnant = -1;
+    historique = new ArrayList<Integer>();
   }
 
 
@@ -83,6 +90,8 @@ public class Partie implements Serializable{
       System.out.println(j);
       col = j.jouer(g.getColonnes().size());
       g.ajouterJeton(new Jeton(j.getTeamId()), col);
+      historique.add(col+1);
+      System.out.println(historique.get(historique.size()-1));
       // On affiche le résultat de son coup
       System.out.println("\n\n---- Etat de la partie ----");
       g.afficher();
@@ -93,7 +102,6 @@ public class Partie implements Serializable{
         break;
       }
     }
-
   }
 
 
