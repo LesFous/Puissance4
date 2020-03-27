@@ -90,6 +90,7 @@ public class Partie implements Serializable{
       if(verifierCoup(col))
         gagnant=j.getTeamId();
     }
+
   }
 
 

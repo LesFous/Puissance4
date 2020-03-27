@@ -32,6 +32,35 @@ class Principale {
     return nb;
   }
 
+  private static void lancerPartie(Partie p){
+    boolean partie_finie=false;
+    Scanner scan = new Scanner(System.in);
+    String reponse="";
+    while(!partie_finie) {
+      p.faireJouerJoueurs();
+      if(p.getGagnant() != -1) {
+        System.out.println("Bravo !!\nL'équipe "+p.getGagnant()+" a gagné");
+        partie_finie = true;
+
+      } else {
+        System.out.println("Voulez-vous sauvegarder ou continuer ou arreter ? (A/S/C)");
+        reponse = scan.nextLine().toUpperCase();
+        if (reponse.equals("S")){
+          try{
+            new Sauvegarde("Sauvegarde.txt").sauvegarder(p);
+            partie_finie = true;
+          }catch (IOException e){
+            System.out.println("Probleme lors de l'ecriture");
+            e.printStackTrace();
+          }catch (Exception e){
+            e.printStackTrace();
+          }
+        } else if(reponse.equals("A")){
+          partie_finie = true;
+        }
+      }
+    }
+  }
 
   /**
   * Methode principale lancee au moment ou le programme est execute
@@ -82,30 +111,19 @@ class Principale {
       p.setJoueurs(joueurs);
     }
     // On lance la partie
-    boolean partie_finie=false;
-    while(!partie_finie) {
-      p.faireJouerJoueurs();
-      if(p.getGagnant() != -1) {
-        System.out.println("Bravo !!\nL'équipe "+p.getGagnant()+" a gagné");
-        partie_finie = true;
+      lancerPartie(p);
+      int nb_colonnes;
+      System.out.println("Voulez-vous rejouer ? (O/N)");
+      reponse = scan.nextLine();
+      while(reponse.toUpperCase().equals("O")){
 
-      } else {
-        System.out.println("Voulez-vous sauvegarder ou continuer ou arreter ? (A/S/C)");
-        reponse = scan.nextLine().toUpperCase();
-        if (reponse.equals("S")){
-          try{
-            new Sauvegarde("Sauvegarde.txt").sauvegarder(p);
-            partie_finie = true;
-          }catch (IOException e){
-            System.out.println("Probleme lors de l'ecriture");
-            e.printStackTrace();
-          }catch (Exception e){
-            e.printStackTrace();
-          }
-        } else if(reponse.equals("A")){
-          partie_finie = true;
-        }
+          System.out.println("Grille :\nCombien de colonnes ?");
+          nb_colonnes = demanderEntier(0, 40);
+          p= new Partie(new Grille(nb_colonnes));
+          lancerPartie(p);
+          System.out.println("Voulez-vous rejouer ? (O/N)");
+          reponse = scan.nextLine();
+
       }
-    }
   }
 }
