@@ -26,6 +26,8 @@ public class Partie implements Serializable{
   * @param grille represente la grille de puissance 4
   */
   public Partie(Grille grille){
+    if(grille == null)
+      throw new NullPointerException("Impossible de faire une partie avec une grille 'null'");
     g= grille;
     joueurs= null;
     gagnant = -1;
@@ -41,9 +43,20 @@ public class Partie implements Serializable{
 
   /**
   * Getter de l'attibut gagnant
+  *
+  * @return le gagnant (-1 si aucun)
   */
   public int getGagnant() {
     return gagnant;
+  }
+
+  /**
+  * Getter du nombrede colonnes de la grille
+  *
+  * @return le nb de colonnes
+  */
+  public int getNbColonnesGrille() {
+    return g.getColonnes().size();
   }
 
   /**
@@ -62,6 +75,7 @@ public class Partie implements Serializable{
     }
 
     int col;
+
     System.out.println("\n\n---- Etat de la partie ----");
     g.afficher();
     for(Joueur j : joueurs) {
@@ -70,7 +84,7 @@ public class Partie implements Serializable{
       col = j.jouer(g.getColonnes().size());
       g.ajouterJeton(new Jeton(j.getTeamId()), col);
       // On affiche le résultat de son coup
-      System.out.println("\nEtat du jeu :");
+      System.out.println("\n\n---- Etat de la partie ----");
       g.afficher();
       // On verifie le coup joué
       if(verifierCoup(col)) {

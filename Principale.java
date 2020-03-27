@@ -51,6 +51,7 @@ class Principale {
         System.out.println("Voulez-vous sauvegarder ou continuer ou arreter ? (A/S/C)");
         reponse = scan.nextLine().toUpperCase();
         if (reponse.equals("S")){
+          System.out.println("Sauvegarde ...");
           try{
             new Sauvegarde("Sauvegarde.txt").sauvegarder(p);
             partie_finie = true;
@@ -60,6 +61,7 @@ class Principale {
           }catch (Exception e){
             e.printStackTrace();
           }
+          System.out.println("Sauvegarde réussie");
         } else if(reponse.equals("A")){
           partie_finie = true;
         }
@@ -73,6 +75,18 @@ class Principale {
   * @param args les arguments passes au moment de lancer le programme
   */
   public static void main(String[] args) {
+    if(args.length == 1) {
+      if(args[0].equals("-tests")) {
+        System.out.println("Lancement des tests");
+        PrincipaleTests.lancerTests();
+        if(PrincipaleTests.succes_tests)
+        System.out.println("\nTous les tests se sont bien passés:\nDémarrage de la partie:");
+      } else {
+        System.out.println("option '"+args[0]+"' inconnue");
+        return;
+      }
+    }
+
     Partie p= null;
     Scanner scan = new Scanner(System.in);
     System.out.println("Voulez-vous reprendre votre sauvegarde ? (O/N)");
@@ -96,7 +110,7 @@ class Principale {
       int nb_colonnes, nb_joueurs, nb_ordinateurs;
       // Grille
       System.out.println("Grille :\nCombien de colonnes ?");
-      nb_colonnes = demanderEntier(0, 40);
+      nb_colonnes = demanderEntier(1, 50);
 
       // Joueurs
       System.out.println("Combien y a-t-il de joueurs ?");
@@ -116,18 +130,18 @@ class Principale {
       p.setJoueurs(joueurs);
     }
     // On lance la partie
-      lancerPartie(p);
-      int nb_colonnes;
-      System.out.println("Voulez-vous rejouer ? (O/N)");
-      reponse = scan.nextLine();
-      while(reponse.toUpperCase().equals("O")){
-          System.out.println("Grille :\nCombien de colonnes ?");
-          nb_colonnes = demanderEntier(1, 40);
-          p= new Partie(new Grille(nb_colonnes));
-          lancerPartie(p);
-          System.out.println("Voulez-vous rejouer ? (O/N)");
-          reponse = scan.nextLine();
+    int nb_colonnes;
+    lancerPartie(p);
+    System.out.println("Voulez-vous rejouer ? (O/N)");
+    reponse = scan.nextLine();
+    while(reponse.toUpperCase().equals("O")){
+        System.out.println("Grille :\nCombien de colonnes ?");
+        nb_colonnes = demanderEntier(1, 50);
+        p= new Partie(new Grille(nb_colonnes));
+        lancerPartie(p);
+        System.out.println("Voulez-vous rejouer ? (O/N)");
+        reponse = scan.nextLine();
 
-      }
+    }
   }
 }
