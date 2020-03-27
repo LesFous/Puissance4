@@ -93,12 +93,19 @@ public class Grille implements Serializable{
     // Affichage des informations
     ArrayList<Colonne> colonnes_triees = getColonnesTriees();
     StringBuilder builder = new StringBuilder();
+    double somme_moy = 0f;
     builder.append("N°colonnes triées par remplissage (n°:nb jetons):\n");
     for(int i=0; i<colonnes_triees.size(); i++) {
       // le numero de la colonne + " " + sa taille
       builder.append(colonnes.indexOf(colonnes_triees.get(i))+1+":"+colonnes_triees.get(i).size()+"  ");
+      somme_moy += colonnes_triees.get(i).size()*1.0f/nb_lignes;
     }
-    System.out.println(builder);
+    System.out.println(somme_moy);
+    if(colonnes.size() > 0)
+      builder.append("\nRemplisage moyen : "+String.format("%.2f",somme_moy/colonnes.size(), 2));
+    else
+      builder.append("\nRemplisage moyen : 0");
+    System.out.println(builder+"\n");
   }
 
   /**

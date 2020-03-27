@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.InputMismatchException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -25,8 +26,9 @@ class Principale {
         } else {
           nb_valide = true;
         }
-      } catch (Exception e) {
+      } catch (InputMismatchException e) {
         System.out.println("Merci de donner un nombre valide");
+        sc.nextLine();
       }
     }
     return nb;
@@ -120,7 +122,7 @@ class Principale {
       reponse = scan.nextLine();
       while(reponse.toUpperCase().equals("O")){
           System.out.println("Grille :\nCombien de colonnes ?");
-          nb_colonnes = demanderEntier(0, 40);
+          nb_colonnes = demanderEntier(1, 40);
           p= new Partie(new Grille(nb_colonnes));
           lancerPartie(p);
           System.out.println("Voulez-vous rejouer ? (O/N)");
