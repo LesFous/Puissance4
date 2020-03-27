@@ -75,6 +75,7 @@ public class Partie implements Serializable{
       // On verifie le coup joué
       if(verifierCoup(col)) {
         gagnant=j.getTeamId();
+        j.victoire();
         break;
       }
     }
