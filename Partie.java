@@ -31,14 +31,14 @@ public class Partie implements Serializable{
   * Constructeur permettant de creer une partie avec une grille pasée en parametre
   * @param grille represente la grille de puissance 4
   */
-  public Partie(Grille grille, Joueur[] p_joueurs) {
+  public Partie(Grille grille, Joueur[] p_joueurs) throws ArgumentInvalideException {
     if(grille == null)
-      throw new NullPointerException("Impossible de faire une partie avec une grille 'null'");
+      throw new ArgumentInvalideException("Impossible de faire une partie avec une grille 'null'");
     if(p_joueurs == null)
-      throw new NullPointerException("Impossible de faire une partie avec joueurs 'null'");
+      throw new ArgumentInvalideException("Impossible de faire une partie avec joueurs 'null'");
     for(Joueur j: p_joueurs)
       if(j == null)
-        throw new NullPointerException("Impossible de faire une partie avec un joueur 'null'");
+        throw new ArgumentInvalideException("Impossible de faire une partie avec un joueur 'null'");
 
     g= grille;
     joueurs= p_joueurs;
@@ -69,9 +69,9 @@ public class Partie implements Serializable{
   *
   * @param joueurs Liste des joueurs qui jouent
   */
-  public void faireJouerJoueurs() throws ActionPartieException {
+  public void faireJouerJoueurs() throws ActionPartieException, PartieFinieException {
     if(gagnant != -1)
-      throw new NullPointerException("Impossible de faire jouer les joueurs sur une partie déjà finie");
+      throw new PartieFinieException("Impossible de faire jouer les joueurs sur une partie déjà finie");
     if(joueurs == null || joueurs.length == 0)
       throw new NullPointerException("Impossible de faire une partie sans joueurs");
     for(Joueur j : joueurs) {
@@ -91,34 +91,47 @@ public class Partie implements Serializable{
       System.out.println(j);
       try {
       col = j.jouer(g.getColonnes().size());
-    }  catch (ActionPartieException e){
-        if(e.getAction()== ActionPartieException.TYPE_RETOUR_ARRIERE){
-            System.out.println(historique.get(historique.size()-1));
+      } catch (ActionPartieException e){
+        if(e.getAction()== ActionPartieException.TYPE_RETOUR_ARRIERE) {
+          if(historique.size() > 0) {
             Colonne c= g.getColonnes().get(historique.get(historique.size()-1));
             c.remove(c.size()-1);
             i--;
-            j_joue=false;
-        }else{
+          } else {
+            System.out.println("Vous ne pouvez pas annuler un mouvement s'il n'y en a aucun");
+          }
+          j_joue=false;
+        } else {
           throw e;
         }
-    }
-        if(j_joue){
-            g.ajouterJeton(new Jeton(j.getTeamId()), col);
-            historique.add(col);
-            // System.out.println(historique.get(historique.size()-1));
-            // On affiche le résultat de son coup
-            System.out.println("\n\n---- Etat de la partie ----");
-
-            // On verifie le coup joué
-            if(verifierCoup(col)) {
-              gagnant=j.getTeamId();
-              j.victoire();
-              break;
-          }
-          i++;
+      }
+      if(j_joue){
+        try {
+          g.ajouterJeton(new Jeton(j.getTeamId()), col);
+        } catch (ArgumentInvalideException e) {
+          e.printStackTrace();
         }
+        historique.add(col);
+        // System.out.println(historique.get(historique.size()-1));
+        // On affiche le résultat de son coup
+        System.out.println("\n\n---- Etat de la partie ----");
         g.afficher();
-        j_joue=true;
+        // On verifie le coup joué
+        try {
+          if(verifierCoup(col)) {
+            gagnant=j.getTeamId();
+            j.victoire();
+            break;
+          }
+        } catch (ArgumentInvalideException e) {
+          System.out.println("verifierCoup(...) ne devrait pas générer d'Execption");
+          e.printStackTrace();
+          return;
+        }
+        i++;
+      }
+      g.afficher();
+      j_joue=true;
     }
   }
 
@@ -126,7 +139,7 @@ public class Partie implements Serializable{
   * Methode permettant de réinitialiser une partie pour en faire une nouvelle
   * @param nb_col le nouveau nombre de colonnes de la grille
   */
-  public void rejouer(int nb_col) {
+  public void rejouer(int nb_col) throws ArgumentInvalideException {
     g.vider();
     g.setNbColonnes(nb_col);
     gagnant = -1;
@@ -139,9 +152,9 @@ public class Partie implements Serializable{
   *
   * @param col la colonne ou il faut verifier
   */
-  public boolean verifierCoup(int col) {
+  public boolean verifierCoup(int col) throws ArgumentInvalideException{
     if(col < 0 || col >= g.getColonnes().size()) {
-      throw new IndexOutOfBoundsException("Impossible de verifier le coup pour la colonne "+col);
+      throw new ArgumentInvalideException("Impossible de verifier le coup pour la colonne "+col);
     }
     int j = g.getColonnes().get(col).size()-1;
     int equipe = g.getColonnes().get(col).getJeton(j).getTeamId();

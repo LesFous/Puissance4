@@ -20,9 +20,9 @@ public class Grille implements Serializable{
   *
   * @param nb_colonnes le nombre de colonnes
   */
-  public Grille(int nb_colonnes) {
+  public Grille(int nb_colonnes) throws ArgumentInvalideException {
     if(nb_colonnes <= 0)
-      throw new NullPointerException("Impossible de créer un grille avec "+nb_colonnes);
+      throw new ArgumentInvalideException("Impossible de créer un grille avec "+nb_colonnes);
     colonnes = new ArrayList<Colonne>(nb_colonnes);
     for(int i=0; i<nb_colonnes; i++) {
       colonnes.add(new Colonne());
@@ -71,9 +71,9 @@ public class Grille implements Serializable{
   *
   * @param nb le nouveau nombre de colonnes
   */
-  public void setNbColonnes(int nb) {
+  public void setNbColonnes(int nb) throws ArgumentInvalideException {
     if(nb <= 0)
-      throw new NullPointerException("Impossible de changer le nombre de colonne d'une grille pour:"+nb);
+      throw new ArgumentInvalideException("Impossible de changer le nombre de colonne d'une grille pour:"+nb);
 
     for(int i=colonnes.size(); i<nb; i++)
       colonnes.add(new Colonne());
@@ -149,9 +149,9 @@ public class Grille implements Serializable{
   * @param j Le jeton à ajouter (non null)
   * @param col Le numero de la colonne a laquelle on ajoute le Jeton (entre 0 et nb_colonnes compris)
   */
-  public void ajouterJeton(Jeton j, int col) {
+  public void ajouterJeton(Jeton j, int col) throws ArgumentInvalideException {
     if (col < 0 || col >= getColonnes().size()) {
-      throw new IndexOutOfBoundsException("La colonne n'est pas valide :"+col);
+      throw new ArgumentInvalideException("La colonne n'est pas valide :"+col);
     }
     getColonnes().get(col).ajouter(j);
   }

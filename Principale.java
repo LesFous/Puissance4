@@ -45,7 +45,7 @@ import java.io.IOException;
     * @param p correspond à la partie que l'on veut lancer
     * @return un code de fin de partie pour savoir comment elle s'est finie
     */
-    private static int lancerPartie(Partie p){
+    private static int lancerPartie(Partie p) throws PartieFinieException{
       boolean partie_finie=false;
       int code_fin = CODE_FIN_JOUEUR_A_GAGNE;
       Scanner scan = new Scanner(System.in);
@@ -75,7 +75,6 @@ import java.io.IOException;
             code_fin = CODE_FIN_ARRET;
             partie_finie = true;
           }
-
         }
 
         if(p.getGagnant() != -1) { // Si apres que les joueurs aient joué, il y a une gagnant, la partie est finie
@@ -91,13 +90,14 @@ import java.io.IOException;
     *
     * @param args les arguments passes au moment de lancer le programme
     */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ArgumentInvalideException, PartieFinieException {
       if(args.length == 1) {
         if(args[0].equals("-tests")) {
           System.out.println("Lancement des tests");
           PrincipaleTests.lancerTests();
           if(PrincipaleTests.succes_tests)
-          System.out.println("\nTous les tests se sont bien passés:\nDémarrage de la partie:");
+            System.out.println("\nTous les tests se sont bien passés.");
+          return;
         } else {
           System.out.println("option '"+args[0]+"' inconnue");
           return;
@@ -114,15 +114,15 @@ import java.io.IOException;
           p = Sauvegarde.recuperer("Sauvegarde.txt");
         } catch (FileNotFoundException e) {
           System.out.println("Le fichier de lecture n'existe pas ");
-          e.printStackTrace();
-        }catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
           System.out.println("Impossible de convertir la sauvegarde");
-          e.printStackTrace();
         } catch (IOException e) {
           System.out.println("Probleme lors de la lecture");
-          e.printStackTrace();
         }
-      } else {
+      }
+
+      if(p == null) { // Si on veut creer un partie ou si on a pas pu récupérer la sauvegarde
+        System.out.println("\nCréation de la partie");
         int nb_colonnes, nb_joueurs, nb_ordinateurs;
         // Grille
         System.out.println("Grille :\nCombien de colonnes ?");
@@ -143,6 +143,7 @@ import java.io.IOException;
           joueurs[i] = new JoueurOrdinateur();
 
         p=new Partie(new Grille(nb_colonnes), joueurs);
+
       }
       // On lance la partie
       int nb_colonnes;

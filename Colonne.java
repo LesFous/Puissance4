@@ -21,11 +21,11 @@ public class Colonne implements Serializable{
   * methode permetteant d'ajouter un jeton a la colonne de puissance4
   * @param j correspon au jeton que l'on va ajouter a la colonne
   */
-  public void ajouter(Jeton j) {
+  public void ajouter(Jeton j) throws ArgumentInvalideException{
     if(j != null)
       jetons.add(j);
     else
-      throw new NullPointerException("Impossible d'ajouter un jeton NULL");
+      throw new ArgumentInvalideException("Impossible d'ajouter un jeton NULL");
   }
 
   /**
