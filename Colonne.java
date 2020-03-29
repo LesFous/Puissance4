@@ -35,6 +35,10 @@ public class Colonne implements Serializable{
     jetons.clear();
   }
 
+  /**
+  * methode qui permet de supprimer un jeton dans une colonnes passee en parametre
+  * @param i correspond a la colone ou le jeton sera supprime 
+  */
   public void remove(int i){
     jetons.remove(i);
   }

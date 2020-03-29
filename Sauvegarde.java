@@ -21,6 +21,7 @@ import java.io.*;
     /**
     * methode qui permet de sauvegarder une partie passee en parametre
     * @param c correspond a la partie que l'on veut sauvegarder
+    * @throws IOException lorsqu'il y a un problem d'ecriture du ficher
     */
     public void sauvegarder(Partie c) throws IOException {
       ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(nom_fich));
@@ -31,6 +32,8 @@ import java.io.*;
     /**
     * methode statique permettant de reprendre une partie deja en cours a partir d'un fichier
     * @param nom_fich parametre correspondant au fichier ou est stockee la partie
+    * @throws IOException lorsqu'il y a un probleme lors de la lecture du fichier
+    * @throws ClassNotFoundException lorsque la classe recuperer de correspond pas à la classe de l'objet du fichier
     * @return la partie recuperee a partir du fichier
     */
     public static Partie recuperer(String nom_fich) throws IOException, ClassNotFoundException {

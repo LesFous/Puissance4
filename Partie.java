@@ -68,6 +68,10 @@ public class Partie implements Serializable{
   * Methode qui permet de lancer une partie entre plusieurs joueurs
   *
   * @param joueurs Liste des joueurs qui jouent
+  *
+  * @throws ActionPartieException lorsqu'un joueur veut sauvegarder la partie ou la quitter
+  *
+  * @throws PartieFinieException lorsque la partie est terminee
   */
   public void faireJouerJoueurs() throws ActionPartieException, PartieFinieException {
     if(gagnant != -1)
@@ -96,7 +100,11 @@ public class Partie implements Serializable{
           if(historique.size() > 0) {
             Colonne c= g.getColonnes().get(historique.get(historique.size()-1));
             c.remove(c.size()-1);
+            historique.remove(historique.size()-1);
             i--;
+            if(i<0){
+              i = joueurs.length-1;
+            }
           } else {
             System.out.println("Vous ne pouvez pas annuler un mouvement s'il n'y en a aucun");
           }
@@ -138,6 +146,7 @@ public class Partie implements Serializable{
   /**
   * Methode permettant de réinitialiser une partie pour en faire une nouvelle
   * @param nb_col le nouveau nombre de colonnes de la grille
+  * @throws ArgumentInvalideException lorsque le nombre de colone n'est pas valide
   */
   public void rejouer(int nb_col) throws ArgumentInvalideException {
     g.vider();
@@ -151,6 +160,7 @@ public class Partie implements Serializable{
   * qui a permis a une equipe de gagner
   *
   * @param col la colonne ou il faut verifier
+  * @throws ArgumentInvalideException lorsque la colone passee en parametre n'est pas valide
   */
   public boolean verifierCoup(int col) throws ArgumentInvalideException{
     if(col < 0 || col >= g.getColonnes().size()) {

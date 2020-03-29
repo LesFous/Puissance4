@@ -7,8 +7,19 @@ import java.io.IOException;
   * classe principale du puissance4 qui creer un puissance4 et fait jouer une liste de joueurs
   */
   public class Principale {
+    /**
+    * attribut entier static correspond au code de fin lorsqu'un joueur gagne
+    */
     private static int CODE_FIN_JOUEUR_A_GAGNE = 0;
+
+    /**
+    * attribut entier static correspond au code de fin lorsqu'il y a une sauvegarde
+    */
     private static int CODE_FIN_SAUVEGARDE = 1;
+
+    /**
+    * attribut entier static correspond au code de fin lorsqu'il y un arret
+    */
     private static int CODE_FIN_ARRET = 2;
 
     /**
@@ -43,6 +54,7 @@ import java.io.IOException;
     /**
     * methode permettant de lancer une Partie de Puissance4
     * @param p correspond à la partie que l'on veut lancer
+    * @throws PartieFinieException lorsque la partie est finie
     * @return un code de fin de partie pour savoir comment elle s'est finie
     */
     private static int lancerPartie(Partie p) throws PartieFinieException{
@@ -89,6 +101,8 @@ import java.io.IOException;
     * Methode principale lancee au moment ou le programme est execute
     *
     * @param args les arguments passes au moment de lancer le programme
+    * @throws ArgumentInvalideException Lorsqu'il y un argument qui n'est pas valide
+    * @throws PartieFinieException lorsqu'il y a une fin de partie
     */
     public static void main(String[] args) throws ArgumentInvalideException, PartieFinieException {
       if(args.length == 1) {
