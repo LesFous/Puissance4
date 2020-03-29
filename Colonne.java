@@ -35,6 +35,9 @@ public class Colonne implements Serializable{
     jetons.clear();
   }
 
+  public void remove(int i){
+    jetons.remove(i);
+  }
   /**
   * Methode qui renvoie un Jeton a l indice i
   * @param i correspond a l index du tableu jetons

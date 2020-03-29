@@ -18,7 +18,7 @@ import java.util.InputMismatchException;
     @Override
     public int jouer(int nbcol) throws ActionPartieException {
       System.out.println("Quelle colonne jouer ? (1-"+nbcol+")");
-      System.out.println("A tout moment vous pouvez sauvegarder ou quitter en ecrivant sauvegarder ou arreter");
+      System.out.println("A tout moment vous pouvez sauvegarder avec sauvegarder, quitter avec arreter ou annuler le coup avec annuler");
       String rep="";
       boolean nb_valide = false;
       int nb=0;
@@ -40,6 +40,8 @@ import java.util.InputMismatchException;
             throw new ActionPartieException(""+ActionPartieException.TYPE_SAUVEGARDE);
           else if(action.equals("ARRETER"))
             throw new ActionPartieException(""+ActionPartieException.TYPE_ARRET);
+            else if(action.equals("ANNULER"))
+            throw new ActionPartieException(""+ActionPartieException.TYPE_RETOUR_ARRIERE);
 
           System.out.println("Merci de donner un nombre valide ou bien 'sauvegarder' ou 'arreter'");
         }

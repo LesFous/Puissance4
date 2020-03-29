@@ -79,26 +79,46 @@ public class Partie implements Serializable{
         throw new NullPointerException("Impossible de faire joueur un joueur 'null'");
     }
 
-    int col;
+    int col= 0;
 
     System.out.println("\n\n---- Etat de la partie ----");
     g.afficher();
-    for(Joueur j : joueurs) {
+    int i =0;
+    boolean j_joue= true;
+    while(i< joueurs.length) {
+      Joueur j = joueurs[i];
       // On fait jouer le joueur
       System.out.println(j);
+      try {
       col = j.jouer(g.getColonnes().size());
-      g.ajouterJeton(new Jeton(j.getTeamId()), col);
-      historique.add(col+1);
-      // System.out.println(historique.get(historique.size()-1));
-      // On affiche le résultat de son coup
-      System.out.println("\n\n---- Etat de la partie ----");
-      g.afficher();
-      // On verifie le coup joué
-      if(verifierCoup(col)) {
-        gagnant=j.getTeamId();
-        j.victoire();
-        break;
-      }
+    }  catch (ActionPartieException e){
+        if(e.getAction()== ActionPartieException.TYPE_RETOUR_ARRIERE){
+            System.out.println(historique.get(historique.size()-1));
+            Colonne c= g.getColonnes().get(historique.get(historique.size()-1));
+            c.remove(c.size()-1);
+            i--;
+            j_joue=false;
+        }else{
+          throw e;
+        }
+    }
+        if(j_joue){
+            g.ajouterJeton(new Jeton(j.getTeamId()), col);
+            historique.add(col);
+            // System.out.println(historique.get(historique.size()-1));
+            // On affiche le résultat de son coup
+            System.out.println("\n\n---- Etat de la partie ----");
+
+            // On verifie le coup joué
+            if(verifierCoup(col)) {
+              gagnant=j.getTeamId();
+              j.victoire();
+              break;
+          }
+          i++;
+        }
+        g.afficher();
+        j_joue=true;
     }
   }
 
@@ -110,6 +130,7 @@ public class Partie implements Serializable{
     g.vider();
     g.setNbColonnes(nb_col);
     gagnant = -1;
+    historique = new ArrayList<Integer>();
   }
 
   /**
