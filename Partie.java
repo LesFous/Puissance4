@@ -56,6 +56,13 @@ public class Partie implements Serializable{
   }
 
   /**
+  * methode qui permet de recuperer tous les joueurs d'une meme partie
+  * @return le tableau avec tous les joueurs de la partie
+  */
+  public Joueur[] getJoueurs(){
+    return joueurs;
+  }
+  /**
   * Getter du nombrede colonnes de la grille
   *
   * @return le nb de colonnes

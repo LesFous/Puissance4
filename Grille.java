@@ -123,7 +123,6 @@ public class Grille implements Serializable{
       builder.append(colonnes.indexOf(colonnes_triees.get(i))+1+":"+colonnes_triees.get(i).size()+"  ");
       somme_moy += colonnes_triees.get(i).size()*1.0f/nb_lignes;
     }
-    System.out.println(somme_moy);
     if(colonnes.size() > 0)
       builder.append("\nRemplisage moyen : "+String.format("%.2f",somme_moy/colonnes.size(), 2));
     else

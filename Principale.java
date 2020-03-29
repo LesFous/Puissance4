@@ -91,6 +91,15 @@ import java.io.IOException;
 
         if(p.getGagnant() != -1) { // Si apres que les joueurs aient joué, il y a une gagnant, la partie est finie
           System.out.println("Bravo !!\nL'équipe "+p.getGagnant()+" a gagné");
+          int i=0;
+          Joueur[] j = p.getJoueurs();
+          while(i<j.length){
+            if(j[i].getTeamId()==p.getGagnant()){
+              break;
+            }
+            i++;
+          }
+          System.out.println("L'équpie "+p.getGagnant()+ " a " + j[i].getVictoire()+ " points ");
           partie_finie = true;
         }
       }
