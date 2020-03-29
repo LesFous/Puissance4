@@ -1,7 +1,5 @@
 -- Ajouter les exception personnalisées à la place de tous les throw new NullPointerException(...);
--- Finir les tests
 -- Ajouter possibilité historique et retour en arrière
 -- Finir java doc (avec les @param et @return)
 -- Pouvoir savegarder et quitter nimporte quand (a faire dans JoueurReel.jouer)
     Et donc pas seuelemnt une fois que tous les joeurus ont joué donc sauvegarder qui est entrain de jouer pour reprendre au meme moment
-  

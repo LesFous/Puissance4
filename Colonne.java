@@ -29,6 +29,13 @@ public class Colonne implements Serializable{
   }
 
   /**
+  * Méthode pour vider une colonne de ses jetons
+  */
+  public void vider() {
+    jetons.clear();
+  }
+
+  /**
   * Methode qui renvoie un Jeton a l indice i
   * @param i correspond a l index du tableu jetons
   * @return le jeton a la place indiquee

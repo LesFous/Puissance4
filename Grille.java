@@ -39,7 +39,7 @@ public class Grille implements Serializable{
   }
 
   /**
-  * Permet d'obtenir la liste des colones triées de la plus remplie a la moins remplie
+  * Permet d'obtenir la liste des colonnes triées de la plus remplie a la moins remplie
   *
   * @return la listes des colonnes triées
   */
@@ -56,6 +56,29 @@ public class Grille implements Serializable{
   */
   public int getNbLignes() {
     return getColonnesTriees().get(0).size();
+  }
+
+  /**
+  * Méthode pour enlever tous les jetons d'une grille
+  */
+  public void vider() {
+    for(Colonne c: colonnes)
+      c.vider();
+  }
+
+  /**
+  * Méthode qui change le nombre de colonnes dans une Grille
+  *
+  * @param nb le nouveau nombre de colonnes
+  */
+  public void setNbColonnes(int nb) {
+    if(nb <= 0)
+      throw new NullPointerException("Impossible de changer le nombre de colonne d'une grille pour:"+nb);
+
+    for(int i=colonnes.size(); i<nb; i++)
+      colonnes.add(new Colonne());
+    for(int i=colonnes.size()-1; i>=nb; i--)
+      colonnes.remove(i);
   }
 
   /**

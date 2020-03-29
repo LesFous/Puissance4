@@ -5,16 +5,20 @@ import java.util.InputMismatchException;
   * classe qui correspond a un joueur reel de puissance4
   */
   public class JoueurReel extends Joueur {
-
     /**
-    * methode qui demande une colonne a un joueur afin de savoir dans quelle colonne on va inserer un jeton
-    * @param nbcol parametre qui correspond au nombre de colonnes que la grille possede
-    * @return un entier qui correspond a la colonne que le joueur a choisi au clavier
+    * Méthode appelée lorsqu'un joueur doit jouer,
+    * avec laquelle le joueur choisit quelle colonne jouer.
+    *
+    * @param nbcol le nombre de colonnes qu'il peut choisir (permet de délimiter un intervalle)
+    *
+    * @throws ActionPartieException lorsqu'un joueur veut faire une action comme suavegarder ou arreter la partie au lieux de choisir une colonne
+    *
+    * @return la colonne choisie par le joueur pour jouer
     */
     @Override
-    public int jouer(int nbcol) {
+    public int jouer(int nbcol) throws ActionPartieException {
       System.out.println("Quelle colonne jouer ? (1-"+nbcol+")");
-      System.out.println("A tout moment vous pouvez sauvegarder ou quitter en ecrivant sauvegarde ou quit");
+      System.out.println("A tout moment vous pouvez sauvegarder ou quitter en ecrivant sauvegarder ou arreter");
       String rep="";
       boolean nb_valide = false;
       int nb=0;
@@ -31,8 +35,13 @@ import java.util.InputMismatchException;
             nb_valide = true;
           }
         } catch (InputMismatchException e) {
-          System.out.println("Merci de donner un nombre valide");
-          sc.nextLine();
+          String action = sc.nextLine().toUpperCase();
+          if(action.equals("SAUVEGARDER"))
+            throw new ActionPartieException(""+ActionPartieException.TYPE_SAUVEGARDE);
+          else if(action.equals("ARRETER"))
+            throw new ActionPartieException(""+ActionPartieException.TYPE_ARRET);
+
+          System.out.println("Merci de donner un nombre valide ou bien 'sauvegarder' ou 'arreter'");
         }
       }
       return nb-1;

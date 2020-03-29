@@ -7,6 +7,10 @@ import java.io.IOException;
   * classe principale du puissance4 qui creer un puissance4 et fait jouer une liste de joueurs
   */
   public class Principale {
+    private static int CODE_FIN_JOUEUR_A_GAGNE = 0;
+    private static int CODE_FIN_SAUVEGARDE = 1;
+    private static int CODE_FIN_ARRET = 2;
+
     /**
     * Méthode statique qui demande de saisir un entier tant que celui-ci n'est pas un entier
     * ou qu'il ne respecte pas les conditions de min et max
@@ -39,37 +43,47 @@ import java.io.IOException;
     /**
     * methode permettant de lancer une Partie de Puissance4
     * @param p correspond à la partie que l'on veut lancer
+    * @return un code de fin de partie pour savoir comment elle s'est finie
     */
-    private static void lancerPartie(Partie p){
+    private static int lancerPartie(Partie p){
       boolean partie_finie=false;
+      int code_fin = CODE_FIN_JOUEUR_A_GAGNE;
       Scanner scan = new Scanner(System.in);
       String reponse="";
+      // Tant que la partie n'est pas finie
       while(!partie_finie) {
-        p.faireJouerJoueurs();
-        if(p.getGagnant() != -1) {
-          System.out.println("Bravo !!\nL'équipe "+p.getGagnant()+" a gagné");
-          partie_finie = true;
+        // On fait jouer les joueurs
+        try {
+          p.faireJouerJoueurs();
 
-        } else {
-          System.out.println("Voulez-vous sauvegarder ou continuer ou arreter ? (A/S/C)");
-          reponse = scan.nextLine().toUpperCase();
-          if (reponse.equals("S")){
+        } catch(ActionPartieException e) { // Si un joueur demande d'arreter la partie ou de la sauvegarder
+          if(e.getAction() == ActionPartieException.TYPE_SAUVEGARDE) { // Sauvegarde
+            code_fin = CODE_FIN_SAUVEGARDE;
             System.out.println("Sauvegarde ...");
             try{
               new Sauvegarde("Sauvegarde.txt").sauvegarder(p);
               partie_finie = true;
-            }catch (IOException e){
+            }catch (IOException e2){
               System.out.println("Probleme lors de l'ecriture");
-              e.printStackTrace();
-            }catch (Exception e){
-              e.printStackTrace();
+              e2.printStackTrace();
+            }catch (Exception e2){
+              e2.printStackTrace();
             }
             System.out.println("Sauvegarde réussie");
-          } else if(reponse.equals("A")){
+
+          } else if(e.getAction() == ActionPartieException.TYPE_ARRET) { // Arret de la partie
+            code_fin = CODE_FIN_ARRET;
             partie_finie = true;
           }
+
+        }
+
+        if(p.getGagnant() != -1) { // Si apres que les joueurs aient joué, il y a une gagnant, la partie est finie
+          System.out.println("Bravo !!\nL'équipe "+p.getGagnant()+" a gagné");
+          partie_finie = true;
         }
       }
+      return code_fin;
     }
 
     /**
@@ -108,7 +122,6 @@ import java.io.IOException;
           System.out.println("Probleme lors de la lecture");
           e.printStackTrace();
         }
-
       } else {
         int nb_colonnes, nb_joueurs, nb_ordinateurs;
         // Grille
@@ -121,7 +134,6 @@ import java.io.IOException;
         System.out.println("Combien y a-t-il d'ordinateurs ?");
         nb_ordinateurs = demanderEntier(0, nb_joueurs);
 
-        p=new Partie(new Grille(nb_colonnes));
         Joueur[] joueurs = new Joueur[nb_joueurs];
 
         for(int i=0; i<nb_joueurs-nb_ordinateurs; i++)
@@ -130,21 +142,27 @@ import java.io.IOException;
         for(int i=nb_joueurs-nb_ordinateurs; i<nb_joueurs; i++)
           joueurs[i] = new JoueurOrdinateur();
 
-        p.setJoueurs(joueurs);
+        p=new Partie(new Grille(nb_colonnes), joueurs);
       }
       // On lance la partie
       int nb_colonnes;
-      lancerPartie(p);
-      System.out.println("Voulez-vous rejouer ? (O/N)");
-      reponse = scan.nextLine();
+      boolean nouvelle_partie = false; // S'il faut creer une
+      reponse = "O";
       while(reponse.toUpperCase().equals("O")){
+        if(nouvelle_partie) {
           System.out.println("Grille :\nCombien de colonnes ?");
           nb_colonnes = demanderEntier(1, 50);
-          p= new Partie(new Grille(nb_colonnes));
-          lancerPartie(p);
+          p.rejouer(nb_colonnes);
+        } else {
+          nouvelle_partie = true;
+        }
+
+        if(lancerPartie(p) == CODE_FIN_JOUEUR_A_GAGNE) {
           System.out.println("Voulez-vous rejouer ? (O/N)");
           reponse = scan.nextLine();
-
+        } else {
+          break;
+        }
       }
     }
   }

@@ -92,7 +92,10 @@ import java.util.ArrayList;
     */
     public static void test_casGagnantHorizontal() {
       Grille g = new Grille(4);
-      Partie p = new Partie(g);
+      Joueur[] joueurs = new Joueur[2];
+      joueurs[0] = (new JoueurReel());
+      joueurs[1] = (new JoueurReel());
+      Partie p = new Partie(g, joueurs);
       // Grille :
       // 1 1 1 1
       // 1 2 1 1
@@ -116,7 +119,10 @@ import java.util.ArrayList;
     */
     public static void test_casGagnantVertical() {
       Grille g = new Grille(2);
-      Partie p = new Partie(g);
+      Joueur[] joueurs = new Joueur[2];
+      joueurs[0] = (new JoueurReel());
+      joueurs[1] = (new JoueurReel());
+      Partie p = new Partie(g, joueurs);
       // Grille :
       //  1 .
       //  1 .
@@ -154,7 +160,10 @@ import java.util.ArrayList;
     */
     public static void test_casGagnantDiagonale_1() {
       Grille g = new Grille(6);
-      Partie p = new Partie(g);
+      Joueur[] joueurs = new Joueur[2];
+      joueurs[0] = (new JoueurReel());
+      joueurs[1] = (new JoueurReel());
+      Partie p = new Partie(g, joueurs);
 
       // . . . . . 1
       // . . . . 1 2
@@ -226,7 +235,10 @@ import java.util.ArrayList;
     */
     public static void test_casGagnantDiagonale_2() {
       Grille g = new Grille(6);
-      Partie p = new Partie(g);
+      Joueur[] joueurs = new Joueur[2];
+      joueurs[0] = (new JoueurReel());
+      joueurs[1] = (new JoueurReel());
+      Partie p = new Partie(g, joueurs);
 
       // 1 . . . . .
       // 2 1 . . . .
@@ -324,6 +336,26 @@ import java.util.ArrayList;
     }
 
     /**
+    * Methode qui test si une grille peut changer de taille
+    */
+    public static void test_setNbColonnes() {
+      Grille g = new Grille(7);
+      g.ajouterJeton(new Jeton(1), 3);
+      g.setNbColonnes(5);
+      if(g.getColonnes().size() != 5) {
+        erreurGrille(g, "Apres setNbColonnes(5), la Grille avec 7 colonnes ne devrait en avoir plus que 5, obtenu :"+g.getColonnes().size());
+      } else if(g.getColonnes().get(3).size() != 1) {
+        erreurGrille(g, "Apres setNbColonnes(5), la Grille avec 7 colonnes et un jeton colonne 3, a perdu son jeton");
+      }
+      g.setNbColonnes(9);
+      if(g.getColonnes().size() != 9) {
+        erreurGrille(g, "Apres setNbColonnes(9), la Grille avec 5 colonnes ne devrait en 9, obtenu :"+g.getColonnes().size());
+      } else if(g.getColonnes().get(3).size() != 1) {
+        erreurGrille(g, "Apres setNbColonnes(9), la Grille avec 5 colonnes et un jeton colonne 3, a perdu son jeton");
+      }
+    }
+
+    /**
     * methode statique qui lance tous les tests
     */
     public static void lancerTests() {
@@ -349,6 +381,9 @@ import java.util.ArrayList;
       test_nbLignes();
       if(!succes_tests)
         System.out.println("Problèmes dans le calcul du nombre de lignes\n\n");
+      test_setNbColonnes();
+      if(!succes_tests)
+        System.out.println("Problèmes dans le changement du nb de colonnes\n\n");
     }
 
   }

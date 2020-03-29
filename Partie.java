@@ -31,21 +31,19 @@ public class Partie implements Serializable{
   * Constructeur permettant de creer une partie avec une grille pasée en parametre
   * @param grille represente la grille de puissance 4
   */
-  public Partie(Grille grille){
+  public Partie(Grille grille, Joueur[] p_joueurs) {
     if(grille == null)
       throw new NullPointerException("Impossible de faire une partie avec une grille 'null'");
+    if(p_joueurs == null)
+      throw new NullPointerException("Impossible de faire une partie avec joueurs 'null'");
+    for(Joueur j: p_joueurs)
+      if(j == null)
+        throw new NullPointerException("Impossible de faire une partie avec un joueur 'null'");
+
     g= grille;
-    joueurs= null;
+    joueurs= p_joueurs;
     gagnant = -1;
     historique = new ArrayList<Integer>();
-  }
-
-
-  /**
-  * Methode pour definir les joueurs d'une partie
-  */
-  public void setJoueurs(Joueur[] joueurs) {
-    this.joueurs = joueurs;
   }
 
   /**
@@ -71,7 +69,7 @@ public class Partie implements Serializable{
   *
   * @param joueurs Liste des joueurs qui jouent
   */
-  public void faireJouerJoueurs() {
+  public void faireJouerJoueurs() throws ActionPartieException {
     if(gagnant != -1)
       throw new NullPointerException("Impossible de faire jouer les joueurs sur une partie déjà finie");
     if(joueurs == null || joueurs.length == 0)
@@ -91,7 +89,7 @@ public class Partie implements Serializable{
       col = j.jouer(g.getColonnes().size());
       g.ajouterJeton(new Jeton(j.getTeamId()), col);
       historique.add(col+1);
-      System.out.println(historique.get(historique.size()-1));
+      // System.out.println(historique.get(historique.size()-1));
       // On affiche le résultat de son coup
       System.out.println("\n\n---- Etat de la partie ----");
       g.afficher();
@@ -104,6 +102,15 @@ public class Partie implements Serializable{
     }
   }
 
+  /**
+  * Methode permettant de réinitialiser une partie pour en faire une nouvelle
+  * @param nb_col le nouveau nombre de colonnes de la grille
+  */
+  public void rejouer(int nb_col) {
+    g.vider();
+    g.setNbColonnes(nb_col);
+    gagnant = -1;
+  }
 
   /**
   * Méthode qui permet de verifier si le dernier jeton d'une colonne est un coup
