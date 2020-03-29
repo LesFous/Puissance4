@@ -111,7 +111,7 @@ public class Partie implements Serializable{
   *
   * @param col la colonne ou il faut verifier
   */
-  private boolean verifierCoup(int col) {
+  public boolean verifierCoup(int col) {
     if(col < 0 || col >= g.getColonnes().size()) {
       throw new IndexOutOfBoundsException("Impossible de verifier le coup pour la colonne "+col);
     }
@@ -199,13 +199,11 @@ public class Partie implements Serializable{
         nb ++;
 
       if(nb == 4) {
-        System.out.println("4 !");
         return true;
       }
       i++;
       j+=j_pas;
       if(j < 0) {// Si j décrémente en dessous de 0
-        System.out.println("j -1");
         return false;
       }
     }
